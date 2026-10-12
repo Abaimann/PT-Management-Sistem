@@ -7,346 +7,2928 @@
   <meta name="description" content="Blueprint sistem internal absensi selfie, pengelolaan timeline kerja, verifikasi senior, dan payroll satu perusahaan." />
   <title>DualStack — Blueprint Absensi, Timeline & Payroll</title>
   <style>
-    :root { --ink:#162037;--muted:#64748b;--light:#f4f7fc;--paper:#fff;--line:#e5eaf2;--blue:#465de8;--blue-soft:#e9edff;--mint:#0a9e85;--mint-soft:#e6f8f2;--amber:#d48a20;--amber-soft:#fff5df;--red:#d85262;--red-soft:#fff0f1;--shadow:0 20px 65px rgba(29,49,96,.07);--radius:18px; }
-    * { box-sizing:border-box; }
-    html {scroll-behavior:smooth;scroll-padding-top:100px;}
-    body { margin:0; background:var(--light);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55;font-size:14px;}
-    button,select {font:inherit;}button{cursor:pointer;}a{text-decoration:none;color:inherit;}
-    .app{display:flex;min-height:100vh;}
-    .sidebar{position:fixed;top:0;bottom:0;left:0;width:252px;background:#0c1528;color:#dde5f5;padding:26px 16px 20px;display:flex;flex-direction:column;z-index:30;overflow-y:auto;box-shadow:8px 0 35px rgba(12,21,40,.08);}
-    .brand{display:flex;align-items:center;gap:11px;padding:0 11px;margin-bottom:33px;}
-    .brand-mark{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,#8e9bff,#4a5ce9);font-weight:900;font-size:18px;color:white;box-shadow:0 6px 18px #4b5ee849;}
-    .brand strong{display:block;color:white;font-weight:750;font-size:16px;letter-spacing:-.5px;}.brand span{display:block;font-size:10px;color:#8ea0bd;letter-spacing:1.1px;font-weight:700;text-transform:uppercase;}
-    .nav-label{font-weight:750;font-size:10px;letter-spacing:1.3px;color:#6f82a4;padding:0 14px;margin:14px 0 8px;text-transform:uppercase;}
-    .nav-link{width:100%;display:flex;align-items:center;gap:12px;border-radius:10px;padding:12px 13px;color:#aebbd2;font-weight:550;font-size:12.8px;transition:.2s;}
-    .nav-link svg{width:17px;height:17px;flex:0 0 17px;stroke-width:1.9;}
-    .nav-link:hover{background:#1b2942;color:#fff;}.nav-link.active{background:#29385d;color:#fff;box-shadow:inset 3px 0 #8f9eff;}
-    .nav-end{margin-top:auto;padding:14px 10px 5px;}.nav-note{font-size:11.5px;line-height:1.6;color:#94a5c0;border:1px solid #25354f;background:#111f36;padding:13px;border-radius:12px;}.nav-note b{color:#edf2ff;}
-    .main{margin-left:252px;min-width:0;flex:1;}.topbar{height:74px;position:sticky;top:0;z-index:20;background:rgba(250,252,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 39px;gap:10px;}
-    .crumb{display:flex;align-items:center;gap:9px;font-size:12px;color:#8490a3;}.crumb b{color:#243047;font-weight:650;}.slash{color:#c3cad6;}
-    .top-actions{display:flex;gap:10px;align-items:center}.pill{display:inline-flex;gap:6px;align-items:center;border:1px solid #dfe5ef;background:#fff;color:#526079;font-size:11px;padding:7px 10px;border-radius:40px;font-weight:650;}.pill i{display:inline-block;border-radius:50%;width:7px;height:7px;background:var(--mint);}
-    .btn{border:1px solid #dce3f0;background:white;color:#35425d;border-radius:10px;display:inline-flex;align-items:center;gap:8px;padding:10px 13px;font-size:12px;font-weight:750;white-space:nowrap;transition:.18s;}.btn:hover{border-color:#9aaaf8;color:#4353d8;transform:translateY(-1px)}.btn svg{width:15px;height:15px}.btn-primary{background:var(--blue);border-color:var(--blue);color:white;}.btn-primary:hover{background:#354ace;color:white;}
-    .menu-toggle{display:none;}.content{max-width:1515px;margin:0 auto;padding:30px 40px 95px;}
-    .hero{position:relative;overflow:hidden;isolation:isolate;border-radius:24px;background:radial-gradient(circle at 87% 19%,#263e7c 0%,transparent 27%),linear-gradient(118deg,#0c1630,#111f47 62%,#162959);padding:44px 48px 38px;color:#fff;box-shadow:0 17px 45px #1523511e;}
-    .hero:before{content:"";position:absolute;right:-65px;top:-140px;width:440px;height:440px;border:1px solid #6b84c52d;border-radius:50%;z-index:-1;box-shadow:0 0 0 65px #6b84c50b,0 0 0 140px #6b84c50c;}.hero:after{content:"";position:absolute;right:70px;bottom:-115px;width:230px;height:230px;background:#6069ed26;border-radius:50%;filter:blur(50px);z-index:-1;}
-    .eyebrow{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;color:#a7befd;}.eyebrow .dot{height:7px;width:7px;border-radius:50%;background:#79d0b9;}
-    .hero h1{max-width:790px;font-size:clamp(27px,3.1vw,42px);font-weight:800;letter-spacing:-1.65px;line-height:1.17;margin:15px 0 15px;}.hero h1 span{color:#9aaafd;}.hero p{max-width:690px;font-size:14px;color:#acb9d6;line-height:1.8;margin:0;}.hero-stats{display:flex;flex-wrap:wrap;gap:0;margin-top:34px;border-top:1px solid #ffffff24;padding-top:24px;}.hero-stat{padding:0 30px;border-right:1px solid #ffffff24;}.hero-stat:first-child{padding-left:0;}.hero-stat:last-child{border:0;}.hero-stat strong{display:block;font-size:25px;letter-spacing:-.8px;line-height:1.2}.hero-stat span{display:block;color:#9baacc;font-size:11px;margin-top:5px;}
-    .section{margin-top:44px;scroll-margin-top:93px;}.section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:19px;}.section-heading .kicker{font-weight:800;color:#5769eb;letter-spacing:1.15px;font-size:10px;text-transform:uppercase;margin:0 0 6px;}.section-heading h2{margin:0;font-size:24px;letter-spacing:-.75px;line-height:1.2;}.section-heading p{max-width:730px;margin:9px 0 0;color:var(--muted);font-size:13px;line-height:1.7;}.section-chip{white-space:nowrap;flex-shrink:0;background:#eef1fb;color:#566588;padding:8px 12px;border-radius:8px;font-size:11px;font-weight:750;}
-    .grid{display:grid;gap:16px;}.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}.module-card{padding:24px 23px;min-height:229px;position:relative;overflow:hidden;}.icon-box{width:45px;height:45px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:var(--blue-soft);color:#4c60e9;}.icon-box svg{width:22px;height:22px}.module-card:nth-child(2) .icon-box{background:var(--mint-soft);color:var(--mint)}.module-card:nth-child(3) .icon-box{background:var(--amber-soft);color:var(--amber)}.module-card h3{margin:17px 0 8px;letter-spacing:-.35px;font-size:16px;}.module-card p{font-size:12.7px;color:var(--muted);margin:0;line-height:1.7;}.module-card .mini{margin-top:16px;font-size:11px;color:#5362be;font-weight:800;}
-    .story{margin-top:16px;padding:19px 22px;display:flex;align-items:center;gap:17px;justify-content:space-between;}.story p{color:#62708c;margin:3px 0 0;font-size:12.5px;}.story strong{font-size:13.5px;}.story .small-tag{background:#ecf9f3;border:1px solid #c9ecdf;color:#118c72;border-radius:7px;padding:7px 10px;white-space:nowrap;font-size:11px;font-weight:750;}
-    .diagram-card{padding:19px;}.diagram-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}.tabs{display:flex;background:#f0f3f9;border:1px solid #e5eaf3;padding:4px;border-radius:11px;gap:3px;flex-wrap:wrap;}.tab{border:0;background:transparent;border-radius:8px;padding:10px 15px;font-weight:750;color:#7b879b;font-size:12px;transition:.18s;}.tab:hover{color:#394cf0}.tab[aria-selected="true"]{background:white;color:#3d51d6;box-shadow:0 3px 10px #26395816;}
-    .diagram-hint{color:#8090a9;font-size:11px;display:flex;align-items:center;gap:7px;}.diagram-hint svg{width:15px;height:15px;}
-    .canvas{overflow-x:auto;overflow-y:hidden;border:1px solid #e7ecf5;border-radius:13px;background:radial-gradient(circle at 1px 1px, #e9edf6 1px, transparent 1px),#fbfcff;background-size:22px 22px;padding:6px;}.canvas svg{display:block;width:100%;height:auto;min-width:700px;}.canvas flow svg{height:auto}
-    .detail-strip{display:flex;align-items:flex-start;gap:12px;padding:15px 16px;border:1px solid #e7ebf4;background:#f9faff;border-radius:11px;margin-top:14px;min-height:74px;}.detail-symbol{background:#e7ebff;color:#465cdb;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:850;width:29px;height:29px;border-radius:9px;flex-shrink:0;}.detail-strip strong{display:block;font-size:13px;}.detail-strip p{margin:3px 0 0;color:#67748b;font-size:12px;line-height:1.65}.diagram-note{margin-top:12px;color:#78869c;font-size:11px;line-height:1.6;}
-    .flow-caption{margin-top:13px;font-size:12px;color:#697790;border-left:3px solid #a0aefe;padding-left:12px;line-height:1.6;}
-    .roles-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;}.role-card{padding:18px 15px;min-height:165px;}.role-card .tag{width:38px;height:38px;border-radius:11px;background:#eff1fc;color:#5466dc;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.4px;}.role-card h3{font-size:13px;letter-spacing:-.2px;margin:13px 0 6px;}.role-card p{font-size:11.7px;line-height:1.6;color:#728097;margin:0;}
-    .matrix-wrap{overflow-x:auto}.matrix{border-collapse:collapse;min-width:790px;width:100%;font-size:11.5px;}.matrix th,.matrix td{text-align:center;border-bottom:1px solid #e9edf4;padding:12px 9px;}.matrix th:first-child,.matrix td:first-child{text-align:left;}.matrix th{font-size:11px;color:#71819c;font-weight:800;background:#f8faff;}.matrix tr:last-child td{border-bottom:0}.matrix td:first-child{font-weight:650;color:#344158}.yes{color:#079477;font-weight:850;font-size:14px}.limited{font-size:12px;font-weight:850;color:#dc9925}.no{font-size:13px;color:#c0c8d5}.matrix-intro{padding:15px 19px;color:#6d7b93;font-size:12px;}.matrix-legend{padding:11px 19px 17px;font-size:11px;color:#8995a8;display:flex;gap:19px;flex-wrap:wrap;}
-    .rules{counter-reset:steps;}.rule{display:flex;gap:13px;padding:15px 17px;border-bottom:1px solid var(--line);}.rule:last-child{border-bottom:0}.rule-icon{color:#4f61dc;background:#ecf0ff;border-radius:9px;width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:850;}.rule strong{font-size:12.7px}.rule p{font-size:12px;color:#697891;line-height:1.65;margin:3px 0 0;}
-    .data-pill{display:inline-flex;background:#eef1fa;color:#596784;border-radius:7px;padding:5px 9px;margin:5px 6px 0 0;font-size:11px;font-weight:650;}
-    .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;}.step-card{padding:21px 19px}.step-badge{font-weight:850;color:#5668e7;font-size:11px;text-transform:uppercase;letter-spacing:.6px}.step-card h3{margin:10px 0 7px;font-size:14px}.step-card p{margin:0;color:#718099;font-size:12px;line-height:1.7}.step-card ul{font-size:11.7px;color:#5d6b84;padding-left:18px;margin:12px 0 0;line-height:1.9;}
-    .footer{padding:28px 0 0;margin-top:47px;border-top:1px solid #dfe5f0;display:flex;justify-content:space-between;gap:10px;align-items:center;color:#8895aa;font-size:11px;}.footer b{color:#5564a6;}
-    svg.diagram [data-node]{cursor:pointer;outline:none;}.diagram [data-node]:hover .node-shape{filter:drop-shadow(0 6px 8px #395bcc30);stroke-width:2.8!important;}.diagram [data-node].selected .node-shape{stroke:#465de8!important;stroke-width:3.3!important;filter:drop-shadow(0 7px 11px #465de835)}
-    .diagram [data-node]:focus-visible .node-shape{stroke:#465de8!important;stroke-width:4!important;}.diagram .connection{stroke:#9eaed0;stroke-width:1.8;fill:none;}.diagram .uc-ellipse{fill:#fff;stroke:#a9b7d6;stroke-width:1.7}.diagram .actor-art{stroke:#526785;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.diagram .uml-label{font-weight:700;fill:#25334d;font-size:13px}.diagram .uml-sub{fill:#7b8aa1;font-size:11px}.diagram .module-head{font-weight:850;fill:#5f71a0;font-size:11px;letter-spacing:1px}.diagram .end-node{fill:#ebefff;stroke:#bac7ff;stroke-width:1.7}.diagram .decision{fill:#fff8e8;stroke:#e7ad58;stroke-width:2}.diagram .flow-node{fill:white;stroke:#c5d1e6;stroke-width:1.6}.diagram .flow-start{fill:#e5f6ee;stroke:#6cc5a0;stroke-width:1.7}.diagram .flow-highlight{fill:#e9edff;stroke:#889bfa;stroke-width:1.7}.diagram .flow-title{fill:#24334e;font-weight:800;font-size:14px}.diagram .flow-sub{fill:#7788a4;font-size:11px}.diagram .arrow-label{font-size:12px;font-weight:800;fill:#697a9e}.diagram .edge-path{fill:none;stroke:#9cadd0;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arrowhead)}
-    .alert{padding:18px 19px;background:#fffbf1;border:1px solid #f2e3bc;border-radius:12px;display:flex;gap:12px;}.alert svg{width:19px;height:19px;flex-shrink:0;color:#c99636;margin-top:2px;}.alert strong{font-size:12.5px;color:#6f5423}.alert p{margin:4px 0 0;font-size:12px;line-height:1.7;color:#8b764f}
-    .mobile-overlay{display:none}.print-header{display:none}
-    @media(max-width:1200px){.content{padding:26px 26px 76px}.topbar{padding:0 26px}.roles-grid{grid-template-columns:repeat(3,minmax(0,1fr));}.cols-4{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media(max-width:900px){.sidebar{transform:translateX(-101%);transition:.22s;}.sidebar.show{transform:translateX(0)}.mobile-overlay.show{display:block;position:fixed;inset:0;background:#081227aa;z-index:29;}.main{margin-left:0}.menu-toggle{display:inline-flex}.topbar{height:64px}.hero{padding:34px 30px}.hero-stat{padding:0 18px}.cols-3{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.section{margin-top:35px}}
-    @media(max-width:620px){.content{padding:18px 14px 48px}.topbar{padding:0 14px}.top-actions .pill{display:none}.top-actions .btn span{display:none}.crumb{font-size:11px}.hero{border-radius:18px;padding:30px 23px}.hero h1{font-size:29px;letter-spacing:-1.1px}.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:21px}.hero-stat{padding:0;border:0!important}.hero-stat strong{font-size:22px}.section-heading{align-items:flex-start}.section-chip{display:none}.section-heading h2{font-size:22px}.cols-3,.cols-2,.steps,.roles-grid{grid-template-columns:1fr}.cols-4{grid-template-columns:1fr 1fr}.diagram-card{padding:11px}.diagram-hint{width:100%;justify-content:flex-end}.tabs{width:100%}.tab{flex:1;padding:9px 6px;font-size:11px}.story{align-items:flex-start;flex-direction:column}.footer{flex-direction:column;align-items:flex-start}.role-card{min-height:0}.canvas svg{min-width:685px}.diagram-note{font-size:10px}}
-    @media print{*{print-color-adjust:exact;-webkit-print-color-adjust:exact}.sidebar,.topbar,.mobile-overlay,.diagram-hint,.print-hide{display:none!important}.app{display:block}.main{margin:0}.content{max-width:none;padding:0 10px}.hero{box-shadow:none}.section{break-inside:avoid;margin-top:28px}.card,.diagram-card{box-shadow:none}.diagram-panel,.flow-panel{display:block!important;break-inside:avoid;page-break-inside:avoid;margin-bottom:15px}.canvas{overflow:visible}.canvas svg{min-width:0!important}.diagram-toolbar .tabs{display:none!important}.diagram-toolbar:after{content:"Semua diagram ditampilkan pada mode cetak";font-size:10px;color:#69758c}.print-header{display:block;font-size:10px;margin:6px 0;color:#64748b}.detail-strip{display:none}.roles-grid{grid-template-columns:repeat(5,1fr)}.module-card{min-height:0}.flow-panel .flow-caption{display:block}.diagram-panel:not(:first-child):before,.flow-panel:not(:first-child):before{content:attr(data-printtitle);font-size:15px;font-weight:800;display:block;margin:15px 0 10px}.footer{margin-top:15px}}
+    :root {
+      --ink: #162037;
+      --muted: #64748b;
+      --light: #f4f7fc;
+      --paper: #fff;
+      --line: #e5eaf2;
+      --blue: #465de8;
+      --blue-soft: #e9edff;
+      --mint: #0a9e85;
+      --mint-soft: #e6f8f2;
+      --amber: #d48a20;
+      --amber-soft: #fff5df;
+      --red: #d85262;
+      --red-soft: #fff0f1;
+      --shadow: 0 20px 65px rgba(29, 49, 96, .07);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--light);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 252px;
+      background: #0c1528;
+      color: #dde5f5;
+      padding: 26px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 30;
+      overflow-y: auto;
+      box-shadow: 8px 0 35px rgba(12, 21, 40, .08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 0 11px;
+      margin-bottom: 33px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #8e9bff, #4a5ce9);
+      font-weight: 900;
+      font-size: 18px;
+      color: white;
+      box-shadow: 0 6px 18px #4b5ee849;
+    }
+
+    .brand strong {
+      display: block;
+      color: white;
+      font-weight: 750;
+      font-size: 16px;
+      letter-spacing: -.5px;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 10px;
+      color: #8ea0bd;
+      letter-spacing: 1.1px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .nav-label {
+      font-weight: 750;
+      font-size: 10px;
+      letter-spacing: 1.3px;
+      color: #6f82a4;
+      padding: 0 14px;
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+    }
+
+    .nav-link {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      padding: 12px 13px;
+      color: #aebbd2;
+      font-weight: 550;
+      font-size: 12.8px;
+      transition: .2s;
+    }
+
+    .nav-link svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 17px;
+      stroke-width: 1.9;
+    }
+
+    .nav-link:hover {
+      background: #1b2942;
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: #29385d;
+      color: #fff;
+      box-shadow: inset 3px 0 #8f9eff;
+    }
+
+    .nav-end {
+      margin-top: auto;
+      padding: 14px 10px 5px;
+    }
+
+    .nav-note {
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: #94a5c0;
+      border: 1px solid #25354f;
+      background: #111f36;
+      padding: 13px;
+      border-radius: 12px;
+    }
+
+    .nav-note b {
+      color: #edf2ff;
+    }
+
+    .main {
+      margin-left: 252px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .topbar {
+      height: 74px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(250, 252, 255, .94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 39px;
+      gap: 10px;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      color: #8490a3;
+    }
+
+    .crumb b {
+      color: #243047;
+      font-weight: 650;
+    }
+
+    .slash {
+      color: #c3cad6;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      border: 1px solid #dfe5ef;
+      background: #fff;
+      color: #526079;
+      font-size: 11px;
+      padding: 7px 10px;
+      border-radius: 40px;
+      font-weight: 650;
+    }
+
+    .pill i {
+      display: inline-block;
+      border-radius: 50%;
+      width: 7px;
+      height: 7px;
+      background: var(--mint);
+    }
+
+    .btn {
+      border: 1px solid #dce3f0;
+      background: white;
+      color: #35425d;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: .18s;
+    }
+
+    .btn:hover {
+      border-color: #9aaaf8;
+      color: #4353d8;
+      transform: translateY(-1px);
+    }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #354ace;
+      color: white;
+    }
+
+    .menu-toggle {
+      display: none;
+    }
+
+    .content {
+      max-width: 1515px;
+      margin: 0 auto;
+      padding: 30px 40px 95px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border-radius: 24px;
+      background: radial-gradient(circle at 87% 19%, #263e7c 0%, transparent 27%),
+        linear-gradient(118deg, #0c1630, #111f47 62%, #162959);
+      padding: 44px 48px 38px;
+      color: #fff;
+      box-shadow: 0 17px 45px #1523511e;
+    }
+
+    .hero:before {
+      content: "";
+      position: absolute;
+      right: -65px;
+      top: -140px;
+      width: 440px;
+      height: 440px;
+      border: 1px solid #6b84c52d;
+      border-radius: 50%;
+      z-index: -1;
+      box-shadow: 0 0 0 65px #6b84c50b,
+        0 0 0 140px #6b84c50c;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      right: 70px;
+      bottom: -115px;
+      width: 230px;
+      height: 230px;
+      background: #6069ed26;
+      border-radius: 50%;
+      filter: blur(50px);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #a7befd;
+    }
+
+    .eyebrow .dot {
+      height: 7px;
+      width: 7px;
+      border-radius: 50%;
+      background: #79d0b9;
+    }
+
+    .hero h1 {
+      max-width: 790px;
+      font-size: clamp(27px, 3.1vw, 42px);
+      font-weight: 800;
+      letter-spacing: -1.65px;
+      line-height: 1.17;
+      margin: 15px 0 15px;
+    }
+
+    .hero h1 span {
+      color: #9aaafd;
+    }
+
+    .hero p {
+      max-width: 690px;
+      font-size: 14px;
+      color: #acb9d6;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin-top: 34px;
+      border-top: 1px solid #ffffff24;
+      padding-top: 24px;
+    }
+
+    .hero-stat {
+      padding: 0 30px;
+      border-right: 1px solid #ffffff24;
+    }
+
+    .hero-stat:first-child {
+      padding-left: 0;
+    }
+
+    .hero-stat:last-child {
+      border: 0;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 25px;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+    }
+
+    .hero-stat span {
+      display: block;
+      color: #9baacc;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .section {
+      margin-top: 44px;
+      scroll-margin-top: 93px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      margin-bottom: 19px;
+    }
+
+    .section-heading .kicker {
+      font-weight: 800;
+      color: #5769eb;
+      letter-spacing: 1.15px;
+      font-size: 10px;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.75px;
+      line-height: 1.2;
+    }
+
+    .section-heading p {
+      max-width: 730px;
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .section-chip {
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: #eef1fb;
+      color: #566588;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .module-card {
+      padding: 24px 23px;
+      min-height: 229px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      background: var(--blue-soft);
+      color: #4c60e9;
+    }
+
+    .icon-box svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .module-card:nth-child(2) .icon-box {
+      background: var(--mint-soft);
+      color: var(--mint);
+    }
+
+    .module-card:nth-child(3) .icon-box {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .module-card h3 {
+      margin: 17px 0 8px;
+      letter-spacing: -.35px;
+      font-size: 16px;
+    }
+
+    .module-card p {
+      font-size: 12.7px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .module-card .mini {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #5362be;
+      font-weight: 800;
+    }
+
+    .story {
+      margin-top: 16px;
+      padding: 19px 22px;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      justify-content: space-between;
+    }
+
+    .story p {
+      color: #62708c;
+      margin: 3px 0 0;
+      font-size: 12.5px;
+    }
+
+    .story strong {
+      font-size: 13.5px;
+    }
+
+    .story .small-tag {
+      background: #ecf9f3;
+      border: 1px solid #c9ecdf;
+      color: #118c72;
+      border-radius: 7px;
+      padding: 7px 10px;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .diagram-card {
+      padding: 19px;
+    }
+
+    .diagram-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f0f3f9;
+      border: 1px solid #e5eaf3;
+      padding: 4px;
+      border-radius: 11px;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 750;
+      color: #7b879b;
+      font-size: 12px;
+      transition: .18s;
+    }
+
+    .tab:hover {
+      color: #394cf0;
+    }
+
+    .tab[aria-selected="true"] {
+      background: white;
+      color: #3d51d6;
+      box-shadow: 0 3px 10px #26395816;
+    }
+
+    .diagram-hint {
+      color: #8090a9;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .diagram-hint svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .canvas {
+      overflow-x: auto;
+      overflow-y: hidden;
+      border: 1px solid #e7ecf5;
+      border-radius: 13px;
+      background: radial-gradient(circle at 1px 1px, #e9edf6 1px, transparent 1px),
+        #fbfcff;
+      background-size: 22px 22px;
+      padding: 6px;
+    }
+
+    .canvas svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 700px;
+    }
+
+    .canvas flow svg {
+      height: auto;
+    }
+
+    .detail-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 15px 16px;
+      border: 1px solid #e7ebf4;
+      background: #f9faff;
+      border-radius: 11px;
+      margin-top: 14px;
+      min-height: 74px;
+    }
+
+    .detail-symbol {
+      background: #e7ebff;
+      color: #465cdb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 850;
+      width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      flex-shrink: 0;
+    }
+
+    .detail-strip strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .detail-strip p {
+      margin: 3px 0 0;
+      color: #67748b;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .diagram-note {
+      margin-top: 12px;
+      color: #78869c;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .flow-caption {
+      margin-top: 13px;
+      font-size: 12px;
+      color: #697790;
+      border-left: 3px solid #a0aefe;
+      padding-left: 12px;
+      line-height: 1.6;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .role-card {
+      padding: 18px 15px;
+      min-height: 165px;
+    }
+
+    .role-card .tag {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #eff1fc;
+      color: #5466dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .role-card h3 {
+      font-size: 13px;
+      letter-spacing: -.2px;
+      margin: 13px 0 6px;
+    }
+
+    .role-card p {
+      font-size: 11.7px;
+      line-height: 1.6;
+      color: #728097;
+      margin: 0;
+    }
+
+    .matrix-wrap {
+      overflow-x: auto;
+    }
+
+    .matrix {
+      border-collapse: collapse;
+      min-width: 790px;
+      width: 100%;
+      font-size: 11.5px;
+    }
+
+    .matrix th,
+    .matrix td {
+      text-align: center;
+      border-bottom: 1px solid #e9edf4;
+      padding: 12px 9px;
+    }
+
+    .matrix th:first-child,
+    .matrix td:first-child {
+      text-align: left;
+    }
+
+    .matrix th {
+      font-size: 11px;
+      color: #71819c;
+      font-weight: 800;
+      background: #f8faff;
+    }
+
+    .matrix tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .matrix td:first-child {
+      font-weight: 650;
+      color: #344158;
+    }
+
+    .yes {
+      color: #079477;
+      font-weight: 850;
+      font-size: 14px;
+    }
+
+    .limited {
+      font-size: 12px;
+      font-weight: 850;
+      color: #dc9925;
+    }
+
+    .no {
+      font-size: 13px;
+      color: #c0c8d5;
+    }
+
+    .matrix-intro {
+      padding: 15px 19px;
+      color: #6d7b93;
+      font-size: 12px;
+    }
+
+    .matrix-legend {
+      padding: 11px 19px 17px;
+      font-size: 11px;
+      color: #8995a8;
+      display: flex;
+      gap: 19px;
+      flex-wrap: wrap;
+    }
+
+    .rules {
+      counter-reset: steps;
+    }
+
+    .rule {
+      display: flex;
+      gap: 13px;
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .rule:last-child {
+      border-bottom: 0;
+    }
+
+    .rule-icon {
+      color: #4f61dc;
+      background: #ecf0ff;
+      border-radius: 9px;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .rule strong {
+      font-size: 12.7px;
+    }
+
+    .rule p {
+      font-size: 12px;
+      color: #697891;
+      line-height: 1.65;
+      margin: 3px 0 0;
+    }
+
+    .data-pill {
+      display: inline-flex;
+      background: #eef1fa;
+      color: #596784;
+      border-radius: 7px;
+      padding: 5px 9px;
+      margin: 5px 6px 0 0;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .step-card {
+      padding: 21px 19px;
+    }
+
+    .step-badge {
+      font-weight: 850;
+      color: #5668e7;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .step-card h3 {
+      margin: 10px 0 7px;
+      font-size: 14px;
+    }
+
+    .step-card p {
+      margin: 0;
+      color: #718099;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .step-card ul {
+      font-size: 11.7px;
+      color: #5d6b84;
+      padding-left: 18px;
+      margin: 12px 0 0;
+      line-height: 1.9;
+    }
+
+    .footer {
+      padding: 28px 0 0;
+      margin-top: 47px;
+      border-top: 1px solid #dfe5f0;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: #8895aa;
+      font-size: 11px;
+    }
+
+    .footer b {
+      color: #5564a6;
+    }
+
+    svg.diagram [data-node] {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .diagram [data-node]:hover .node-shape {
+      filter: drop-shadow(0 6px 8px #395bcc30);
+      stroke-width: 2.8 !important;
+    }
+
+    .diagram [data-node].selected .node-shape {
+      stroke: #465de8 !important;
+      stroke-width: 3.3 !important;
+      filter: drop-shadow(0 7px 11px #465de835);
+    }
+
+    .diagram [data-node]:focus-visible .node-shape {
+      stroke: #465de8 !important;
+      stroke-width: 4 !important;
+    }
+
+    .diagram .connection {
+      stroke: #9eaed0;
+      stroke-width: 1.8;
+      fill: none;
+    }
+
+    .diagram .uc-ellipse {
+      fill: #fff;
+      stroke: #a9b7d6;
+      stroke-width: 1.7;
+    }
+
+    .diagram .actor-art {
+      stroke: #526785;
+      fill: none;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .diagram .uml-label {
+      font-weight: 700;
+      fill: #25334d;
+      font-size: 13px;
+    }
+
+    .diagram .uml-sub {
+      fill: #7b8aa1;
+      font-size: 11px;
+    }
+
+    .diagram .module-head {
+      font-weight: 850;
+      fill: #5f71a0;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .diagram .end-node {
+      fill: #ebefff;
+      stroke: #bac7ff;
+      stroke-width: 1.7;
+    }
+
+    .diagram .decision {
+      fill: #fff8e8;
+      stroke: #e7ad58;
+      stroke-width: 2;
+    }
+
+    .diagram .flow-node {
+      fill: white;
+      stroke: #c5d1e6;
+      stroke-width: 1.6;
+    }
+
+    .diagram .flow-start {
+      fill: #e5f6ee;
+      stroke: #6cc5a0;
+      stroke-width: 1.7;
+    }
+
+    .diagram .flow-highlight {
+      fill: #e9edff;
+      stroke: #889bfa;
+      stroke-width: 1.7;
+    }
+
+    .diagram .flow-title {
+      fill: #24334e;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .diagram .flow-sub {
+      fill: #7788a4;
+      font-size: 11px;
+    }
+
+    .diagram .arrow-label {
+      font-size: 12px;
+      font-weight: 800;
+      fill: #697a9e;
+    }
+
+    .diagram .edge-path {
+      fill: none;
+      stroke: #9cadd0;
+      stroke-width: 2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      marker-end: url(#arrowhead);
+    }
+
+    .alert {
+      padding: 18px 19px;
+      background: #fffbf1;
+      border: 1px solid #f2e3bc;
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .alert svg {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      color: #c99636;
+      margin-top: 2px;
+    }
+
+    .alert strong {
+      font-size: 12.5px;
+      color: #6f5423;
+    }
+
+    .alert p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #8b764f;
+    }
+
+    .mobile-overlay {
+      display: none;
+    }
+
+    .print-header {
+      display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .content {
+        padding: 26px 26px 76px;
+      }
+
+      .topbar {
+        padding: 0 26px;
+      }
+
+      .roles-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-101%);
+        transition: .22s;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .mobile-overlay.show {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: #081227aa;
+        z-index: 29;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .topbar {
+        height: 64px;
+      }
+
+      .hero {
+        padding: 34px 30px;
+      }
+
+      .hero-stat {
+        padding: 0 18px;
+      }
+
+      .cols-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .steps {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .section {
+        margin-top: 35px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .content {
+        padding: 18px 14px 48px;
+      }
+
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .top-actions .pill {
+        display: none;
+      }
+
+      .top-actions .btn span {
+        display: none;
+      }
+
+      .crumb {
+        font-size: 11px;
+      }
+
+      .hero {
+        border-radius: 18px;
+        padding: 30px 23px;
+      }
+
+      .hero h1 {
+        font-size: 29px;
+        letter-spacing: -1.1px;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 21px;
+      }
+
+      .hero-stat {
+        padding: 0;
+        border: 0 !important;
+      }
+
+      .hero-stat strong {
+        font-size: 22px;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+      }
+
+      .section-chip {
+        display: none;
+      }
+
+      .section-heading h2 {
+        font-size: 22px;
+      }
+
+      .cols-3,
+      .cols-2,
+      .steps,
+      .roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cols-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .diagram-card {
+        padding: 11px;
+      }
+
+      .diagram-hint {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 9px 6px;
+        font-size: 11px;
+      }
+
+      .story {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .role-card {
+        min-height: 0;
+      }
+
+      .canvas svg {
+        min-width: 685px;
+      }
+
+      .diagram-note {
+        font-size: 10px;
+      }
+    }
+
+    @media print {
+      * {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .sidebar,
+      .topbar,
+      .mobile-overlay,
+      .diagram-hint,
+      .print-hide {
+        display: none !important;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .main {
+        margin: 0;
+      }
+
+      .content {
+        max-width: none;
+        padding: 0 10px;
+      }
+
+      .hero {
+        box-shadow: none;
+      }
+
+      .section {
+        break-inside: avoid;
+        margin-top: 28px;
+      }
+
+      .card,
+      .diagram-card {
+        box-shadow: none;
+      }
+
+      .diagram-panel,
+      .flow-panel {
+        display: block !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 15px;
+      }
+
+      .canvas {
+        overflow: visible;
+      }
+
+      .canvas svg {
+        min-width: 0 !important;
+      }
+
+      .diagram-toolbar .tabs {
+        display: none !important;
+      }
+
+      .diagram-toolbar:after {
+        content: "Semua diagram ditampilkan pada mode cetak";
+        font-size: 10px;
+        color: #69758c;
+      }
+
+      .print-header {
+        display: block;
+        font-size: 10px;
+        margin: 6px 0;
+        color: #64748b;
+      }
+
+      .detail-strip {
+        display: none;
+      }
+
+      .roles-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .module-card {
+        min-height: 0;
+      }
+
+      .flow-panel .flow-caption {
+        display: block;
+      }
+
+      .diagram-panel:not(:first-child):before,
+      .flow-panel:not(:first-child):before {
+        content: attr(data-printtitle);
+        font-size: 15px;
+        font-weight: 800;
+        display: block;
+        margin: 15px 0 10px;
+      }
+
+      .footer {
+        margin-top: 15px;
+      }
+    }
   </style>
 </head>
 <body>
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
-  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="14" r="3.5"/></symbol>
-  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 15l2 2 5-5"/></symbol>
-  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="16" rx="3"/><path d="M2 9h20M17 15h.01M5 5V3h14"/></symbol>
-  <symbol id="i-flow" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="5" rx="1"/><rect x="3" y="16" width="8" height="5" rx="1"/><rect x="14" y="16" width="8" height="5" rx="1"/><path d="M12 7v4M7 16v-5h10v5"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m8 12 3 3 5-5"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
-  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6zM18 12h.01"/></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v3"/></symbol>
-</svg>
-<div class="mobile-overlay" id="overlay"></div>
-<div class="app">
-  <aside class="sidebar" id="sidebar" aria-label="Navigasi dokumen">
-    <a href="#overview" class="brand"><div class="brand-mark">W</div><div><strong>DualStack</strong><span>Internal Workforce System</span></div></a>
-    <div class="nav-label">Dokumentasi sistem</div>
-    <nav>
-      <a class="nav-link active" href="#overview"><svg fill="none" stroke="currentColor"><use href="#i-grid"/></svg>Ringkasan konsep</a>
-      <a class="nav-link" href="#modules"><svg fill="none" stroke="currentColor"><use href="#i-list"/></svg>Modul utama</a>
-      <a class="nav-link" href="#usecases"><svg fill="none" stroke="currentColor"><use href="#i-users"/></svg>Use Case Diagram</a>
-      <a class="nav-link" href="#flowcharts"><svg fill="none" stroke="currentColor"><use href="#i-flow"/></svg>Flowchart Sistem</a>
-      <a class="nav-link" href="#roles"><svg fill="none" stroke="currentColor"><use href="#i-shield"/></svg>Role & hak akses</a>
-      <a class="nav-link" href="#business"><svg fill="none" stroke="currentColor"><use href="#i-lock"/></svg>Aturan bisnis</a>
-      <a class="nav-link" href="#data"><svg fill="none" stroke="currentColor"><use href="#i-grid"/></svg>Data & integrasi</a>
-      <a class="nav-link" href="#roadmap"><svg fill="none" stroke="currentColor"><use href="#i-calendar"/></svg>Tahap implementasi</a>
-    </nav>
-    <div class="nav-end"><div class="nav-note"><b>Cakupan sistem</b><br>Satu perusahaan, satu basis data terpusat, pengaturan akses sesuai jabatan dan otorisasi. Bukan platform multi-tenant.</div></div>
-  </aside>
-  <main class="main">
-    <header class="topbar">
-      <div style="display:flex;align-items:center;gap:11px">
-        <button class="btn menu-toggle" id="menuButton" type="button" aria-label="Buka navigasi"><svg fill="none" stroke="currentColor"><use href="#i-menu"/></svg></button>
-        <div class="crumb"><span>Perencanaan Sistem</span><span class="slash">/</span><b>Blueprint Fungsional</b></div>
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-grid" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24">
+      <path d="M14.5 4h-5L7 7H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4z" />
+      <circle cx="12" cy="14" r="3.5" />
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18M8 15l2 2 5-5" />
+    </symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24">
+      <rect x="2" y="5" width="20" height="16" rx="3" />
+      <path d="M2 9h20M17 15h.01M5 5V3h14" />
+    </symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24">
+      <rect x="8" y="2" width="8" height="5" rx="1" />
+      <rect x="3" y="16" width="8" height="5" rx="1" />
+      <rect x="14" y="16" width="8" height="5" rx="1" />
+      <path d="M12 7v4M7 16v-5h10v5" />
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="m8 12 3 3 5-5" />
+    </symbol>
+    <symbol id="i-list" viewBox="0 0 24 24">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24">
+      <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <path d="M6 14h12v8H6zM18 12h.01" />
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4" y="10" width="16" height="12" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v3" />
+    </symbol>
+  </svg>
+
+  <div class="mobile-overlay" id="overlay"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi dokumen">
+      <a href="#overview" class="brand">
+        <div class="brand-mark">W</div>
+        <div>
+          <strong>DualStack</strong>
+          <span>Internal Workforce System</span>
+        </div>
+      </a>
+
+      <div class="nav-label">Dokumentasi sistem</div>
+
+      <nav>
+        <a class="nav-link active" href="#overview">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-grid" />
+          </svg>
+          Ringkasan konsep
+        </a>
+        <a class="nav-link" href="#modules">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-list" />
+          </svg>
+          Modul utama
+        </a>
+        <a class="nav-link" href="#usecases">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-users" />
+          </svg>
+          Use Case Diagram
+        </a>
+        <a class="nav-link" href="#flowcharts">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-flow" />
+          </svg>
+          Flowchart Sistem
+        </a>
+        <a class="nav-link" href="#roles">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-shield" />
+          </svg>
+          Role &amp; hak akses
+        </a>
+        <a class="nav-link" href="#business">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-lock" />
+          </svg>
+          Aturan bisnis
+        </a>
+        <a class="nav-link" href="#data">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-grid" />
+          </svg>
+          Data &amp; integrasi
+        </a>
+        <a class="nav-link" href="#roadmap">
+          <svg fill="none" stroke="currentColor">
+            <use href="#i-calendar" />
+          </svg>
+          Tahap implementasi
+        </a>
+      </nav>
+
+      <div class="nav-end">
+        <div class="nav-note">
+          <b>Cakupan sistem</b>
+          <br />
+          Satu perusahaan, satu basis data terpusat, pengaturan akses sesuai jabatan dan otorisasi. Bukan platform multi-tenant.
+        </div>
       </div>
-      <div class="top-actions"><span class="pill"><i></i> Konsep v1.0</span><button class="btn btn-primary" type="button" onclick="window.print()"><svg fill="none" stroke="currentColor"><use href="#i-printer"/></svg><span>Cetak / Simpan PDF</span></button></div>
-    </header>
-    <div class="content">
-      <section id="overview" class="hero">
-        <div class="eyebrow"><span class="dot"></span> BluePrint Sistem Internal • Satu Perusahaan</div>
-        <h1>Satu sistem untuk <span>hadir, bekerja, diverifikasi, dan dibayar.</span></h1>
-        <p>Rancangan web terintegrasi untuk absensi selfie berbasis waktu & lokasi, perencanaan pekerjaan bulanan–mingguan–harian, verifikasi hasil oleh senior, serta rekap dan ekspor payroll oleh tim penggajian.</p>
-        <div class="hero-stats">
-          <div class="hero-stat"><strong>05</strong><span>Kelompok peran</span></div>
-          <div class="hero-stat"><strong>03</strong><span>Modul bisnis inti</span></div>
-          <div class="hero-stat"><strong>02×</strong><span>Absensi setiap hari kerja</span></div>
-          <div class="hero-stat"><strong>01</strong><span>Perusahaan terpusat</span></div>
-        </div>
-      </section>
-      <section class="section" id="modules">
-        <div class="section-heading"><div><p class="kicker">01 / Solusi</p><h2>Apa yang akan dibangun?</h2><p>Tiga modul saling terhubung melalui akun pengguna, data pegawai, kalender kerja, dan jejak aktivitas. Kinerja tugas dan kehadiran dikelola sebagai dua hal berbeda.</p></div><span class="section-chip">Website responsif / Mobile-first</span></div>
-        <div class="grid cols-3">
-          <article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-camera"/></svg></div><h3>01. Smart Attendance</h3><p>Check-in dan check-out memakai selfie kamera langsung, timestamp server, lokasi GPS, watermark bukti hadir, jadwal kerja, izin/cuti, koreksi, serta rekap alpha yang telah diverifikasi.</p><div class="mini">Output → data kehadiran valid</div></article>
-          <article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-calendar"/></svg></div><h3>02. Work Timeline</h3><p>Senior membuat target dan tenggat bulanan. Junior dan anak magang memecah target ke rencana mingguan dan tugas harian, mengunggah bukti, lalu mengirim ke senior untuk disetujui atau direvisi.</p><div class="mini" style="color:#168a77">Output → progres terverifikasi</div></article>
-          <article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-wallet"/></svg></div><h3>03. Payroll Management</h3><p>HR menutup data absensi periode berjalan. Sistem menyusun perhitungan gaji/uang saku berdasarkan komponen dan aturan yang disetujui. Tim Payroll meninjau, menyetujui, mengunduh Excel, dan mencatat pembayaran.</p><div class="mini" style="color:#be8026">Output → rekap payroll & Excel</div></article>
-        </div>
-        <div class="card story"><div><strong>Prinsip utama: tugas selesai bukan berarti langsung disetujui.</strong><p>Centang dari pelaksana mengubah status menjadi <b>Menunggu Verifikasi</b>. Progres resmi bertambah setelah senior melakukan approval.</p></div><span class="small-tag">Senior Approval Required</span></div>
-        <div class="card" style="margin-top:16px;padding:22px">
-          <div style="font-size:13px;font-weight:800;margin-bottom:4px">Fitur pendukung yang termasuk dalam cakupan</div>
-          <p style="color:var(--muted);margin:0 0 14px;font-size:12px">Melengkapi tiga modul utama tanpa mengubah alur inti absensi, verifikasi, dan penggajian.</p>
-          <div class="grid cols-4" style="gap:10px">
-            <div class="data-pill" style="margin:0;padding:10px 12px">Dashboard personal per role</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Gantt Chart & kalender</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Notifikasi deadline / revisi</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Evidence file & komentar</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Logbook kegiatan magang</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Laporan bulanan otomatis</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Evaluasi kinerja & pencapaian</div>
-            <div class="data-pill" style="margin:0;padding:10px 12px">Peringatan target terlambat</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 11px">
+          <button class="btn menu-toggle" id="menuButton" type="button" aria-label="Buka navigasi">
+            <svg fill="none" stroke="currentColor">
+              <use href="#i-menu" />
+            </svg>
+          </button>
+          <div class="crumb">
+            <span>Perencanaan Sistem</span>
+            <span class="slash">/</span>
+            <b>Blueprint Fungsional</b>
           </div>
         </div>
-      </section>
-      <section class="section" id="usecases">
-        <div class="section-heading"><div><p class="kicker">02 / UML</p><h2>Use Case Diagram</h2><p>Menjelaskan siapa yang berinteraksi dengan fungsi sistem. Pilih modul untuk melihat aktor dan hubungan use case-nya. Klik oval untuk membaca penjelasan fungsinya.</p></div><span class="section-chip">Diagram interaktif</span></div>
-        <article class="card diagram-card">
-          <div class="diagram-toolbar"><div class="tabs" role="tablist" aria-label="Pilih modul use case"><button class="tab uc-tab" role="tab" aria-selected="true" data-tab="attendance">Absensi</button><button class="tab uc-tab" role="tab" aria-selected="false" data-tab="timeline">Timeline</button><button class="tab uc-tab" role="tab" aria-selected="false" data-tab="payroll">Payroll</button></div><span class="diagram-hint"><svg fill="none" stroke="currentColor"><use href="#i-info"/></svg> Klik oval untuk detail • Geser pada layar kecil</span></div>
-          <div class="diagram-panel" data-module="attendance" data-printtitle="Use Case — Absensi"><div class="canvas" id="uc-attendance"></div></div>
-          <div class="diagram-panel" data-module="timeline" data-printtitle="Use Case — Timeline" hidden><div class="canvas" id="uc-timeline"></div></div>
-          <div class="diagram-panel" data-module="payroll" data-printtitle="Use Case — Payroll" hidden><div class="canvas" id="uc-payroll"></div></div>
-          <div class="detail-strip" id="ucDetail"><div class="detail-symbol">i</div><div><strong>Pilih use case pada diagram</strong><p>Penjelasan tentang fungsi, pelaksana, dan hasil akan muncul di sini.</p></div></div>
-          <div class="diagram-note">Notasi: figur orang = aktor, oval = fungsi (use case), garis = interaksi. Aktor <b>Anggota Tim</b> mewakili Karyawan/Junior dan Anak Magang; keduanya memiliki akun individual. Hak akses rinci ada pada matriks di bawah.</div>
-        </article>
-      </section>
-      <section class="section" id="flowcharts">
-        <div class="section-heading"><div><p class="kicker">03 / Proses bisnis</p><h2>Flowchart Sistem</h2><p>Memperlihatkan urutan proses dan keputusan utama. Tersedia satu alur gambaran besar dan tiga alur operasional. Klik setiap kotak untuk memahami logikanya.</p></div><span class="section-chip">4 alur end-to-end</span></div>
-        <article class="card diagram-card">
-          <div class="diagram-toolbar"><div class="tabs" role="tablist" aria-label="Pilih flowchart"><button class="tab flow-tab" role="tab" aria-selected="true" data-tab="overviewFlow">Gambaran besar</button><button class="tab flow-tab" role="tab" aria-selected="false" data-tab="attendanceFlow">Absensi</button><button class="tab flow-tab" role="tab" aria-selected="false" data-tab="timelineFlow">Timeline</button><button class="tab flow-tab" role="tab" aria-selected="false" data-tab="payrollFlow">Payroll</button></div><span class="diagram-hint"><svg fill="none" stroke="currentColor"><use href="#i-info"/></svg> Belah ketupat = keputusan</span></div>
-          <div class="flow-panel" data-module="overviewFlow" data-printtitle="Flowchart — Gambaran Besar"><div class="canvas" id="flow-overviewFlow"></div><p class="flow-caption">Dua jalur berjalan berdampingan: jalur <b>kehadiran → payroll</b> dan jalur <b>pekerjaan → verifikasi → evaluasi</b>. Progres pekerjaan tidak otomatis menjadi dasar pemotongan gaji.</p></div>
-          <div class="flow-panel" data-module="attendanceFlow" data-printtitle="Flowchart — Absensi" hidden><div class="canvas" id="flow-attendanceFlow"></div><p class="flow-caption">Selfie masuk/pulang diambil langsung, kemudian sistem mengecek waktu, lokasi, jadwal, dan kelengkapan. Jika gagal, tersedia pengulangan atau pengajuan koreksi.</p></div>
-          <div class="flow-panel" data-module="timelineFlow" data-printtitle="Flowchart — Timeline" hidden><div class="canvas" id="flow-timelineFlow"></div><p class="flow-caption">Senior memegang target utama dan otoritas final. Junior/anak magang menyusun pekerjaan detail, mengirim bukti, lalu menunggu keputusan senior.</p></div>
-          <div class="flow-panel" data-module="payrollFlow" data-printtitle="Flowchart — Payroll" hidden><div class="canvas" id="flow-payrollFlow"></div><p class="flow-caption">Koreksi absensi diselesaikan sebelum payroll closing. Hanya data yang valid dan periode yang telah dikunci yang digunakan untuk perhitungan final serta ekspor.</p></div>
-          <div class="detail-strip" id="flowDetail"><div class="detail-symbol">i</div><div><strong>Pilih sebuah tahapan pada flowchart</strong><p>Penjelasan masing-masing langkah akan ditampilkan di sini.</p></div></div>
-        </article>
-      </section>
-      <section class="section" id="roles">
-        <div class="section-heading"><div><p class="kicker">04 / Organisasi</p><h2>Lima kelompok peran</h2><p>Platform dibuat untuk satu perusahaan. Setiap pengguna memiliki profil dan hak akses berdasarkan tanggung jawabnya; seorang pegawai dapat memiliki lebih dari satu role bila dibutuhkan.</p></div></div>
-        <div class="roles-grid">
-          <div class="card role-card"><div class="tag">HR</div><h3>Admin / HR</h3><p>Master pegawai, jadwal, izin, koreksi absensi, validasi alpha dan penutupan data kehadiran.</p></div>
-          <div class="card role-card"><div class="tag">SR</div><h3>Senior / Supervisor</h3><p>Target bulanan, batas waktu, pembagian tim, review evidence, revisi, dan evaluasi capaian.</p></div>
-          <div class="card role-card"><div class="tag">JR</div><h3>Karyawan / Junior</h3><p>Absensi diri, rencana mingguan, tugas harian, bukti kerja, serta pemantauan hasil review.</p></div>
-          <div class="card role-card"><div class="tag">MG</div><h3>Anak Magang</h3><p>Absensi, logbook magang, pekerjaan harian, unggah bukti, dan laporan magang.</p></div>
-          <div class="card role-card"><div class="tag">PY</div><h3>Tim Payroll</h3><p>Melihat rekap payroll lintas departemen yang diotorisasi, review hasil, ekspor Excel dan pembayaran.</p></div>
+        <div class="top-actions">
+          <span class="pill">
+            <i></i>
+            Konsep v1.0
+          </span>
+          <button class="btn btn-primary" type="button" onclick="window.print()">
+            <svg fill="none" stroke="currentColor">
+              <use href="#i-printer" />
+            </svg>
+            <span>Cetak / Simpan PDF</span>
+          </button>
         </div>
-        <div class="card" style="margin-top:16px;overflow:hidden">
-          <div class="matrix-intro"><b style="color:#374663">Matriks hak akses utama</b> — akses detail dapat dibatasi lagi berdasarkan departemen, hubungan supervisor, dan level persetujuan.</div>
-          <div class="matrix-wrap"><table class="matrix"><thead><tr><th>Aktivitas / Fitur</th><th>Admin / HR</th><th>Senior</th><th>Karyawan</th><th>Magang</th><th>Payroll</th></tr></thead><tbody>
-            <tr><td>Absensi selfie milik sendiri</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Mengajukan izin / sakit / cuti</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Verifikasi izin dan koreksi absensi</td><td class="yes">✓</td><td class="limited">◐</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-            <tr><td>Atur target dan deadline bulanan</td><td class="limited">◐</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-            <tr><td>Buat / ubah rencana mingguan dan tugas sendiri</td><td class="limited">◐</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
-            <tr><td>Unggah evidence, checklist tugas</td><td class="limited">◐</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
-            <tr><td>Verifikasi hasil pekerjaan anggota tim</td><td class="limited">◐</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-            <tr><td>Rekap kehadiran & closing absensi</td><td class="yes">✓</td><td class="limited">◐</td><td class="no">—</td><td class="no">—</td><td class="limited">◐</td></tr>
-            <tr><td>Kelola komponen gaji dan uang saku</td><td class="limited">◐</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="limited">◐</td></tr>
-            <tr><td>Hitung, review dan finalisasi payroll</td><td class="limited">◐</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
-            <tr><td>Export payroll Excel (.xlsx)</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
-            <tr><td>Lihat slip sendiri (bila berlaku)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          </tbody></table></div>
-          <div class="matrix-legend"><span><b class="yes">✓</b> Diizinkan sesuai cakupan data</span><span><b class="limited">◐</b> Bersyarat / hanya atas otorisasi</span><span><b class="no">—</b> Tidak diizinkan</span></div>
-        </div>
-        <div class="card" style="margin-top:16px;padding:22px">
-          <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:13px"><div><b style="font-size:14px">Format Export Payroll (.xlsx)</b><p style="font-size:12px;color:var(--muted);margin:3px 0 0">Tersedia setelah payroll disetujui, dengan filter periode, departemen, status pegawai, dan status pembayaran.</p></div><span class="small-tag" style="background:#edf1ff;color:#5466dc;border:1px solid #d7dfff;border-radius:7px;padding:7px 10px;font-size:11px;font-weight:750">4 Sheet Excel</span></div>
-          <div class="grid cols-4" style="gap:11px">
-            <div style="padding:13px;background:#f7f9fe;border:1px solid #e8edf6;border-radius:11px"><b style="font-size:12px">01 · Rekap Payroll</b><p style="margin:6px 0 0;color:#74819a;font-size:11px">Identitas, departemen, gaji pokok, tunjangan, potongan, gaji bersih.</p></div>
-            <div style="padding:13px;background:#f7f9fe;border:1px solid #e8edf6;border-radius:11px"><b style="font-size:12px">02 · Detail Absensi</b><p style="margin:6px 0 0;color:#74819a;font-size:11px">Hari kerja, hadir, izin, sakit, cuti, alpha, keterlambatan.</p></div>
-            <div style="padding:13px;background:#f7f9fe;border:1px solid #e8edf6;border-radius:11px"><b style="font-size:12px">03 · Rincian Hitung</b><p style="margin:6px 0 0;color:#74819a;font-size:11px">Rumus dan rincian setiap komponen penggajian atau uang saku.</p></div>
-            <div style="padding:13px;background:#f7f9fe;border:1px solid #e8edf6;border-radius:11px"><b style="font-size:12px">04 · Per Departemen</b><p style="margin:6px 0 0;color:#74819a;font-size:11px">Ringkasan biaya gaji, potongan dan status pembayaran per unit.</p></div>
+      </header>
+
+      <div class="content">
+        <section id="overview" class="hero">
+          <div class="eyebrow">
+            <span class="dot"></span>
+            BluePrint Sistem Internal • Satu Perusahaan
           </div>
-        </div>
-      </section>
-      <section class="section" id="business">
-        <div class="section-heading"><div><p class="kicker">05 / Aturan bisnis</p><h2>Aturan yang harus disepakati</h2><p>Ini adalah kebijakan dasar sebelum pengembangan dimulai. Kebijakan aktual disahkan perusahaan dan diterapkan sebagai konfigurasi, bukan angka yang ditanam permanen di kode.</p></div></div>
-        <div class="grid cols-2">
-          <div class="card rules">
-            <div class="rule"><span class="rule-icon">01</span><div><strong>Absensi 2 kali per hari kerja</strong><p>Check-in dan check-out menggunakan kamera. Tanggal/jam bersumber dari server; GPS dan nama lokasi divalidasi. Jam kerja dan radius lokasi dapat dikonfigurasi.</p></div></div>
-            <div class="rule"><span class="rule-icon">02</span><div><strong>Koreksi dan izin lebih dulu dari status alpha</strong><p>Absen kosong tidak serta-merta dianggap alpha. Sistem memeriksa hari libur, jadwal, cuti, sakit, izin, dinas luar, dan permintaan koreksi.</p></div></div>
-            <div class="rule"><span class="rule-icon">03</span><div><strong>Approval senior menentukan progres resmi</strong><p>Status tugas: Draft → Dikerjakan → Menunggu Verifikasi → Disetujui / Perlu Revisi. Setiap revisi meninggalkan riwayat.</p></div></div>
+          <h1>Satu sistem untuk <span>hadir, bekerja, diverifikasi, dan dibayar.</span></h1>
+          <p>
+            Rancangan web terintegrasi untuk absensi selfie berbasis waktu &amp; lokasi,
+            perencanaan pekerjaan bulanan–mingguan–harian, verifikasi hasil oleh senior,
+            serta rekap dan ekspor payroll oleh tim penggajian.
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <strong>05</strong>
+              <span>Kelompok peran</span>
+            </div>
+            <div class="hero-stat">
+              <strong>03</strong>
+              <span>Modul bisnis inti</span>
+            </div>
+            <div class="hero-stat">
+              <strong>02×</strong>
+              <span>Absensi setiap hari kerja</span>
+            </div>
+            <div class="hero-stat">
+              <strong>01</strong>
+              <span>Perusahaan terpusat</span>
+            </div>
           </div>
-          <div class="card rules">
-            <div class="rule"><span class="rule-icon">04</span><div><strong>Pemotongan berdasarkan kebijakan yang sah</strong><p>Hanya alpha yang telah diverifikasi dan termasuk kategori yang secara hukum dapat memengaruhi upah yang diproses. Komponen gaji dan uang saku magang dipisah.</p></div></div>
-            <div class="rule"><span class="rule-icon">05</span><div><strong>Payroll closing & audit trail</strong><p>HR mengunci absensi periode; Payroll meninjau hasil, menyetujui, ekspor Excel, lalu mencatat pembayaran. Koreksi sesudah closing butuh persetujuan dan riwayat.</p></div></div>
-            <div class="rule"><span class="rule-icon">06</span><div><strong>Privasi dan akses berdasarkan kebutuhan</strong><p>Foto wajah, koordinat lokasi, NIK, dan gaji adalah data sensitif secara operasional. Terapkan pembatasan akses, enkripsi, retensi, pencatatan akses, dan kebijakan privasi.</p></div></div>
+        </section>
+
+        <section class="section" id="modules">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">01 / Solusi</p>
+              <h2>Apa yang akan dibangun?</h2>
+              <p>
+                Tiga modul saling terhubung melalui akun pengguna, data pegawai, kalender kerja,
+                dan jejak aktivitas. Kinerja tugas dan kehadiran dikelola sebagai dua hal berbeda.
+              </p>
+            </div>
+            <span class="section-chip">Website responsif / Mobile-first</span>
           </div>
-        </div>
-      </section>
-      <section class="section" id="data">
-        <div class="section-heading"><div><p class="kicker">06 / Rancangan awal</p><h2>Data yang saling terhubung</h2><p>Supaya tidak menjadi prototipe terpisah, seluruh modul harus membaca data master dan menyimpan perubahan ke database utama. Diagram ini menjelaskan alur dependensi datanya, bukan struktur tabel final.</p></div></div>
-        <div class="grid cols-3">
-          <article class="card module-card" style="min-height:0"><h3 style="margin-top:0">Identitas & Absensi</h3><p>Informasi profil, penempatan, relasi atasan, jadwal, lokasi kerja, foto kehadiran, koordinat, izin, koreksi, dan periode kehadiran.</p><div><span class="data-pill">employees</span><span class="data-pill">roles</span><span class="data-pill">work_schedules</span><span class="data-pill">attendances</span><span class="data-pill">leave_requests</span></div></article>
-          <article class="card module-card" style="min-height:0"><h3 style="margin-top:0">Pekerjaan & Evaluasi</h3><p>Target bulanan, milestone, rencana mingguan, task harian, evidence, komentar, persetujuan, bobot progres, dan logbook magang.</p><div><span class="data-pill">monthly_targets</span><span class="data-pill">weekly_plans</span><span class="data-pill">tasks</span><span class="data-pill">evidences</span><span class="data-pill">task_reviews</span></div></article>
-          <article class="card module-card" style="min-height:0"><h3 style="margin-top:0">Gaji & Audit</h3><p>Komponen gaji, aturan payroll, penutupan periode, hasil perhitungan, otorisasi, berkas Excel, slip, pembayaran, dan audit trail.</p><div><span class="data-pill">salary_components</span><span class="data-pill">payroll_periods</span><span class="data-pill">payroll_items</span><span class="data-pill">payments</span><span class="data-pill">audit_logs</span></div></article>
-        </div>
-        <div class="alert" style="margin-top:16px"><svg fill="none" stroke="currentColor" stroke-width="2"><use href="#i-info"/></svg><div><strong>Rencana keamanan dan implementasi</strong><p>Gunakan autentikasi terpusat, RBAC di backend, validasi semua aksi di server, penyimpanan foto privat, akses terproteksi untuk export payroll, jejak perubahan, serta backup database. Selfie + watermark GPS bukan jaminan identitas atau lokasi yang sepenuhnya anti-manipulasi.</p></div></div>
-      </section>
-      <section class="section" id="roadmap">
-        <div class="section-heading"><div><p class="kicker">07 / Eksekusi</p><h2>Rencana pengembangan bertahap</h2><p>Pengerjaan diprioritaskan agar alur utama selesai dan teruji sebelum fitur lanjutan ditambahkan. Proyek ini dirancang untuk satu perusahaan, dengan antarmuka desktop dan mobile yang konsisten.</p></div></div>
-        <div class="steps">
-          <div class="card step-card"><div class="step-badge">Fase 01 • Fondasi</div><h3>Identitas & kehadiran</h3><p>Pastikan pegawai bisa login, absensi, dan melihat riwayat, sementara HR bisa memverifikasi data.</p><ul><li>Role & user management</li><li>Selfie, GPS, watermark, jadwal</li><li>Izin, cuti, koreksi & validasi</li></ul></div>
-          <div class="card step-card"><div class="step-badge">Fase 02 • Kinerja</div><h3>Timeline & approval</h3><p>Mulai dari target bulanan sampai laporan kegiatan yang diverifikasi senior.</p><ul><li>Target, milestone dan deadline</li><li>Rencana mingguan & task harian</li><li>Evidence, revisi & progress report</li></ul></div>
-          <div class="card step-card"><div class="step-badge">Fase 03 • Finansial</div><h3>Payroll & pelaporan</h3><p>Perhitungan ditarik dari absensi yang sudah disahkan, lalu diproses Tim Payroll.</p><ul><li>Payroll closing dan approval</li><li>Export Excel beberapa sheet & slip</li><li>Riwayat pembayaran & audit trail</li></ul></div>
-        </div>
-      </section>
-      <footer class="footer"><span><b>DualStack</b> · Blueprint konsep sistem internal perusahaan · Versi 1.0</span><span>Dokumen perencanaan, bukan aplikasi produksi atau perhitungan payroll nyata.</span></footer>
-    </div>
-  </main>
-</div>
-<script>
-(() => {
-  'use strict';
-  const NS='http://www.w3.org/2000/svg';
-  function el(tag, attrs={}, parent) { const node=document.createElementNS(NS,tag); for(const [k,v] of Object.entries(attrs)) node.setAttribute(k,String(v)); if(parent)parent.appendChild(node);return node; }
-  function textSvg(svg,x,y,value,klass,anchor='middle') { const t=el('text',{x,y,'text-anchor':anchor,class:klass},svg);t.textContent=value;return t; }
-  function lineText(group, lines, x, y, className, lineHeight=17){const start=y-((lines.length-1)*lineHeight/2);lines.forEach((s,i)=>textSvg(group,x,start+i*lineHeight,s,className));}
-  function setDetail(id,title,description){document.getElementById(id).innerHTML='<div class="detail-symbol">✓</div><div><strong>'+escapeHTML(title)+'</strong><p>'+escapeHTML(description)+'</p></div>';}
-  function escapeHTML(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-  const uc={
-    attendance:{title:'SMART ATTENDANCE',actors:[{id:'staff',name:['Karyawan /','Junior & Magang'],x:132,y:260,side:'left'},{id:'hr',name:['Admin / HR'],x:1090,y:350,side:'right'}],cases:[
-      {id:'checkin',x:480,y:145,label:['Check-in dengan','selfie'],desc:'Anggota tim mengambil selfie dari kamera browser saat datang. Sistem merekam waktu server dan lokasi yang dapat diverifikasi.'},
-      {id:'checkout',x:750,y:145,label:['Check-out dengan','selfie'],desc:'Anggota tim mengambil selfie saat pulang. Sistem mengaitkan check-out dengan hari kerja atau shift yang sesuai.'},
-      {id:'leave',x:480,y:303,label:['Pengajuan izin,','sakit dan cuti'],desc:'Anggota tim mengajukan ketidakhadiran dengan alasan dan dokumen pendukung jika diperlukan.'},
-      {id:'history',x:750,y:303,label:['Riwayat','kehadiran'],desc:'Anggota tim meninjau data check-in, check-out, lokasi, dan status kehadiran miliknya.'},
-      {id:'validation',x:480,y:465,label:['Verifikasi & koreksi','absensi'],desc:'HR memvalidasi data yang tidak lengkap, pengajuan koreksi, izin, serta status alpha sebelum payroll closing.'},
-      {id:'recap',x:750,y:465,label:['Rekap absensi','per periode'],desc:'HR membuat ringkasan kehadiran per individu, tim, departemen, dan periode untuk keperluan monitoring serta payroll.'}
-    ],links:[['staff','checkin'],['staff','checkout'],['staff','leave'],['staff','history'],['hr','validation'],['hr','recap']]},
-    timeline:{title:'WORK TIMELINE & APPROVAL',actors:[{id:'senior',name:['Senior /','Supervisor'],x:132,y:300,side:'left'},{id:'staff',name:['Karyawan /','Junior & Magang'],x:1090,y:332,side:'right'}],cases:[
-      {id:'target',x:480,y:145,label:['Atur target &','deadline bulanan'],desc:'Senior membuat target bulanan dan milestone lengkap dengan tenggat, prioritas, dan penanggung jawab.'},
-      {id:'weekly',x:750,y:145,label:['Rencana mingguan','dan harian'],desc:'Pelaksana memecah target menjadi rencana mingguan serta tugas harian di bawah target yang diberikan.'},
-      {id:'evidence',x:480,y:303,label:['Update progres &','unggah evidence'],desc:'Pelaksana mencatat progres task dan mengunggah dokumen, foto, tautan, serta catatan hasil kerja.'},
-      {id:'submit',x:750,y:303,label:['Ajukan penyelesaian','pekerjaan'],desc:'Setelah checklist, pelaksana mengajukan tugas untuk diverifikasi senior. Tugas tidak otomatis menjadi completed resmi.'},
-      {id:'verify',x:480,y:465,label:['Review, setujui','atau revisi'],desc:'Senior memeriksa evidence, menerima atau mengembalikan tugas dengan catatan revisi. Semua keputusan tercatat.'},
-      {id:'report',x:750,y:465,label:['Laporan & evaluasi','pencapaian'],desc:'Sistem menyusun ringkasan progres terverifikasi, target terlambat, hasil kerja, dan logbook magang.'}
-    ],links:[['senior','target'],['senior','verify'],['senior','report'],['staff','weekly'],['staff','evidence'],['staff','submit'],['staff','report']]},
-    payroll:{title:'PAYROLL MANAGEMENT',actors:[{id:'hr',name:['Admin / HR'],x:132,y:330,side:'left'},{id:'payroll',name:['Tim Payroll'],x:1090,y:330,side:'right'}],cases:[
-      {id:'attendanceClose',x:480,y:145,label:['Validasi & closing','data kehadiran'],desc:'HR menyelesaikan koreksi/izin yang tertunda, memverifikasi alpha, lalu mengunci rekap absensi periode.'},
-      {id:'salarySetup',x:750,y:145,label:['Kelola komponen','penggajian'],desc:'Petugas berotorisasi menetapkan gaji pokok, tunjangan, komponen wajib, serta aturan penyesuaian yang sah.'},
-      {id:'calculate',x:480,y:303,label:['Generate hasil','payroll'],desc:'Sistem menghitung gaji dan uang saku sesuai periode dengan data kehadiran dan pengaturan yang telah disahkan.'},
-      {id:'approve',x:750,y:303,label:['Review dan','approve payroll'],desc:'Tim Payroll mengecek hasil per individu dan total. Persetujuan final mengikuti kewenangan perusahaan.'},
-      {id:'excel',x:480,y:465,label:['Ekspor Excel (.xlsx)','dan slip gaji'],desc:'Tim Payroll mengunduh Excel multi-sheet berisi ringkasan, absensi, rincian komponen, dan per departemen; slip gaji sesuai izin.'},
-      {id:'paid',x:750,y:465,label:['Catat pembayaran','& audit trail'],desc:'Setelah pembayaran, Tim Payroll menandai status Paid dan sistem menyimpan riwayat penutupan, ekspor, serta perubahan.'}
-    ],links:[['hr','attendanceClose'],['hr','salarySetup'],['payroll','calculate'],['payroll','approve'],['payroll','excel'],['payroll','paid']]}
-  };
-  function drawActor(svg,a){
-    const g=el('g',{'data-actor':a.id},svg);const y=a.y;el('circle',{cx:a.x,cy:y-39,r:11,class:'actor-art'},g);el('path',{d:`M${a.x} ${y-28} V${y+9} M${a.x-23} ${y-11} H${a.x+23} M${a.x} ${y+9} L${a.x-18} ${y+36} M${a.x} ${y+9} L${a.x+18} ${y+36}`,class:'actor-art'},g);lineText(g,a.name,a.x,y+55,'uml-label',17);return g;
-  }
-  function drawUseCase(key){
-    const d=uc[key], parent=document.getElementById('uc-'+key),svg=el('svg',{class:'diagram','viewBox':'0 0 1220 595',role:'img','aria-label':'Diagram UML Use Case '+d.title},parent);
-    el('rect',{x:257,y:38,width:706,height:529,rx:16,fill:'#f6f8ff',stroke:'#bac5df','stroke-width':1.7},svg);
-    el('rect',{x:430,y:19,width:360,height:35,rx:9,fill:'#e9edff',stroke:'#bdc9ec'},svg);textSvg(svg,610,41,d.title,'module-head');
-    const amap=Object.fromEntries(d.actors.map(x=>[x.id,x]));const cmap=Object.fromEntries(d.cases.map(x=>[x.id,x]));
-    d.links.forEach(([actorId,caseId])=>{const a=amap[actorId],c=cmap[caseId];const sx=a.x+(a.side==='left'?29:-29),sy=a.y-6;const ex=c.x+(a.side==='left'?-120:120),ey=c.y;el('path',{d:`M${sx} ${sy} L${ex} ${ey}`,class:'connection'},svg);});
-    d.actors.forEach(a=>drawActor(svg,a));
-    d.cases.forEach(c=>{
-      const g=el('g',{'data-node':c.id,tabindex:0,role:'button','aria-label':c.label.join(' ')},svg);
-      el('ellipse',{cx:c.x,cy:c.y,rx:125,ry:46,class:'uc-ellipse node-shape'},g);
-      lineText(g,c.label,c.x,c.y+5,'uml-label',17);
-      const select=()=>{svg.querySelectorAll('[data-node]').forEach(n=>n.classList.remove('selected'));g.classList.add('selected');setDetail('ucDetail',c.label.join(' '),c.desc);};g.addEventListener('click',select);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select();}});
-    });
-  }
-  const flows={
-    overviewFlow:{height:795,nodes:[
-      {id:'start',x:590,y:79,w:265,h:66,type:'start',label:['Periode kerja dimulai'],sub:'akun + jadwal + target',desc:'Setiap pekerja memiliki profil, jadwal, supervisor, dan target yang relevan untuk periode berjalan.'},
-      {id:'attend',x:300,y:228,w:253,h:80,type:'card',label:['Check-in & check-out'],sub:'Selfie + GPS + watermark',desc:'Karyawan dan anak magang melakukan dua absensi pada hari kerja, dengan selfie dan waktu terverifikasi.'},
-      {id:'task',x:880,y:228,w:253,h:80,type:'highlight',label:['Target bulanan → task'],sub:'Senior → pelaksana',desc:'Senior menentukan target; anggota tim membuat rencana mingguan, harian, dan melengkapi evidence pekerjaan.'},
-      {id:'hr',x:300,y:396,w:253,h:80,type:'card',label:['Validasi kehadiran'],sub:'HR cek izin & alpha',desc:'HR memverifikasi ketidakhadiran dan menuntaskan koreksi untuk menutup periode absensi.'},
-      {id:'review',x:880,y:396,w:253,h:80,type:'card',label:['Verifikasi senior'],sub:'Setuju atau revisi',desc:'Progres yang telah dilaporkan belum final sebelum diverifikasi oleh senior.'},
-      {id:'pay',x:300,y:574,w:253,h:80,type:'highlight',label:['Hitung payroll'],sub:'Payroll review + Excel',desc:'Payroll dihitung dari komponen yang disahkan dan kehadiran valid. Tim Payroll mengulas serta mengekspor hasil.'},
-      {id:'report',x:880,y:574,w:253,h:80,type:'highlight',label:['Progress & evaluasi'],sub:'Laporan pekerjaan',desc:'Hasil verifikasi menjadi progress resmi, evaluasi bulanan, dan logbook kegiatan magang.'}
-    ],edges:[{d:'M590 112 L590 162 L300 162 L300 188'},{d:'M590 112 L590 162 L880 162 L880 188'},{d:'M300 269 L300 356'},{d:'M880 269 L880 356'},{d:'M300 437 L300 534'},{d:'M880 437 L880 534'}]},
-    attendanceFlow:{height:825,nodes:[
-      {id:'a1',x:590,y:63,w:280,h:66,type:'start',label:['Buka menu Absensi'],sub:'Pengguna sudah login',desc:'Pengguna mengakses modul absensi menggunakan akun aktif.'},
-      {id:'a2',x:590,y:176,w:280,h:76,type:'card',label:['Pilih masuk / pulang'],sub:'Sesuai jadwal kerja',desc:'Sistem memastikan pengguna memilih check-in atau check-out sesuai status hari itu dan jadwal/shift.'},
-      {id:'a3',x:590,y:293,w:280,h:86,type:'highlight',label:['Selfie kamera langsung'],sub:'Ambil GPS + jam server',desc:'Browser meminta izin kamera dan lokasi. Server menyimpan waktu dan data yang diperlukan serta menghasilkan watermark.'},
-      {id:'a4',x:590,y:445,w:212,h:128,type:'decision',label:['Data absensi','valid?'],sub:'lokasi, jadwal, duplikasi',desc:'Server memeriksa lokasi dan akurasinya, foto, status absensi, jadwal, serta potensi duplikasi.'},
-      {id:'a5',x:255,y:596,w:268,h:83,type:'card',label:['Belum dapat dicatat'],sub:'Tampilkan alasan kegagalan',desc:'Jika validasi gagal, jangan langsung menandai alpha. Tampilkan alasan yang jelas dan bantu pengguna melanjutkan.'},
-      {id:'a6',x:255,y:728,w:268,h:76,type:'card',label:['Ulangi / ajukan koreksi'],sub:'Diperiksa HR',desc:'Pengguna bisa mengulangi selfie atau mengirim pengajuan koreksi apabila GPS, kamera atau jadwal bermasalah.'},
-      {id:'a7',x:925,y:596,w:268,h:83,type:'highlight',label:['Simpan absensi'],sub:'Rekam bukti & status',desc:'Data absensi diterima, foto disimpan privat, dan status kehadiran diperbarui secara atomik di database.'},
-      {id:'a8',x:925,y:728,w:268,h:76,type:'start',label:['Bukti tersimpan'],sub:'Lihat riwayat sendiri',desc:'Pengguna melihat konfirmasi dan riwayat kehadiran, termasuk waktu masuk/pulang dan status.'}
-    ],edges:[{d:'M590 97 L590 137'},{d:'M590 215 L590 250'},{d:'M590 337 L590 381'},{d:'M485 445 L255 445 L255 554',label:'Tidak valid',lx:347,ly:428},{d:'M695 445 L925 445 L925 554',label:'Valid',lx:795,ly:429},{d:'M255 638 L255 690'},{d:'M925 638 L925 690'}]},
-    timelineFlow:{height:825,nodes:[
-      {id:'t1',x:590,y:65,w:320,h:76,type:'start',label:['Senior menetapkan target'],sub:'Bulanan, milestone, deadline',desc:'Senior membuat target bulanan, milestone, tenggat, penanggung jawab dan kriteria keberhasilan.'},
-      {id:'t2',x:590,y:183,w:320,h:80,type:'card',label:['Rencana mingguan'],sub:'Disusun junior / magang',desc:'Pelaksana membuat rencana mingguan yang diturunkan dari target bulan berjalan.'},
-      {id:'t3',x:590,y:300,w:320,h:82,type:'card',label:['Task & log harian'],sub:'Checklist + evidence',desc:'Pelaksana menjalankan tugas, mengisi logbook dan melampirkan foto, dokumen, catatan atau tautan hasil.'},
-      {id:'t4',x:590,y:410,w:320,h:80,type:'highlight',label:['Ajukan penyelesaian'],sub:'Status: menunggu review',desc:'Tugas yang ditandai selesai berpindah ke antrian review senior, belum menghitung progress final.'},
-      {id:'t5',x:590,y:548,w:210,h:124,type:'decision',label:['Disetujui','senior?'],sub:'cek kualitas & bukti',desc:'Senior mengevaluasi kesesuaian evidence dan hasil kerja dengan target serta bisa mengembalikan tugas.'},
-      {id:'t6',x:253,y:712,w:275,h:90,type:'card',label:['Revisi & kirim ulang'],sub:'Catatan senior tersimpan',desc:'Jika ditolak, pelaksana menerima komentar revisi, memperbaiki task, lalu mengirim ulang.'},
-      {id:'t7',x:926,y:712,w:275,h:90,type:'start',label:['Progress terverifikasi'],sub:'Evaluasi & laporan bulanan',desc:'Tugas yang disetujui berkontribusi pada progres resmi, laporan kegiatan, dan penilaian perkembangan.'}
-    ],edges:[{d:'M590 104 L590 140'},{d:'M590 224 L590 257'},{d:'M590 341 L590 370'},{d:'M590 451 L590 486'},{d:'M485 548 L253 548 L253 668',label:'Revisi',lx:347,ly:531},{d:'M695 548 L926 548 L926 668',label:'Disetujui',lx:794,ly:531}]},
-    payrollFlow:{height:1015,nodes:[
-      {id:'p1',x:590,y:67,w:312,h:76,type:'start',label:['Akhir periode payroll'],sub:'Tanggal tutup ditentukan',desc:'HR/Payroll menetapkan periode pemrosesan sesuai kalender dan kebijakan perusahaan.'},
-      {id:'p2',x:590,y:180,w:312,h:78,type:'card',label:['HR validasi data absensi'],sub:'Izin, cuti, sakit & alpha',desc:'HR menyelesaikan validasi, keberatan, dan koreksi absensi agar status hadir atau alpha akurat.'},
-      {id:'p3',x:590,y:318,w:218,h:130,type:'decision',label:['Data absensi','final?'],sub:'Tidak ada koreksi tertunda',desc:'Jika koreksi penting masih tertunda, payroll tidak boleh menggunakan data tersebut sebagai dasar final.'},
-      {id:'p4',x:248,y:469,w:278,h:85,type:'card',label:['Selesaikan koreksi'],sub:'HR verifikasi ulang',desc:'HR memeriksa bukti, alasan, jadwal, dan menyetujui atau menolak koreksi, lalu memperbarui data absensi.'},
-      {id:'p5',x:909,y:469,w:278,h:85,type:'highlight',label:['Lock rekap kehadiran'],sub:'Snapshot payroll period',desc:'Buat snapshot absensi yang tidak dapat berubah tanpa prosedur koreksi resmi.'},
-      {id:'p6',x:909,y:586,w:278,h:85,type:'card',label:['Hitung gaji / uang saku'],sub:'Komponen + aturan yang sah',desc:'Sistem menjalankan perhitungan berdasarkan data payroll dan kebijakan perusahaan; uang saku magang diproses terpisah.'},
-      {id:'p7',x:909,y:701,w:278,h:85,type:'card',label:['Review & approval Payroll'],sub:'Periksa rincian & total',desc:'Tim Payroll meninjau hasil, membandingkan perubahan, meminta perbaikan jika perlu, dan memberikan otorisasi final.'},
-      {id:'p8',x:909,y:811,w:278,h:78,type:'highlight',label:['Export Excel & slip gaji'],sub:'File .xlsx multi-sheet',desc:'Setelah disahkan, ekspor Excel ringkasan, detail absensi, rincian komponen, dan per departemen. Slip disediakan sesuai akses.'},
-      {id:'p9',x:909,y:932,w:278,h:76,type:'start',label:['Catat paid & arsipkan'],sub:'Audit trail + periode terkunci',desc:'Tim Payroll merekam status pembayaran, tanggal, referensi pembayaran, dan jejak proses tanpa menghilangkan riwayat.'}
-    ],edges:[{d:'M590 105 L590 141'},{d:'M590 220 L590 253'},{d:'M480 318 L248 318 L248 425',label:'Belum',lx:338,ly:301},{d:'M699 318 L909 318 L909 425',label:'Sudah',lx:796,ly:301},{d:'M909 512 L909 543'},{d:'M909 629 L909 658'},{d:'M909 744 L909 771'},{d:'M909 849 L909 894'}]}
-  };
-  function flowGraph(key){
-    const d=flows[key], svg=el('svg',{class:'diagram','viewBox':`0 0 1180 ${d.height}`,role:'img','aria-label':'Flowchart '+key},document.getElementById('flow-'+key));
-    const defs=el('defs',{},svg),marker=el('marker',{id:'arrowhead',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:5.5,markerHeight:5.5,orient:'auto-start-reverse'},defs);el('path',{d:'M0 0 L10 5 L0 10 z',fill:'#9cadd0'},marker);
-    d.edges.forEach(edge=>{el('path',{d:edge.d,class:'edge-path'},svg);if(edge.label){el('rect',{x:edge.lx-39,y:edge.ly-14,width:78,height:24,rx:7,fill:'#fff',stroke:'#e5eaf2'},svg);textSvg(svg,edge.lx,edge.ly+3,edge.label,'arrow-label');}});
-    d.nodes.forEach(n=>{
-      const g=el('g',{'data-node':n.id,tabindex:0,role:'button','aria-label':n.label.join(' ')},svg);
-      if(n.type==='decision'){
-        const w=n.w,h=n.h;el('polygon',{points:`${n.x},${n.y-h/2} ${n.x+w/2},${n.y} ${n.x},${n.y+h/2} ${n.x-w/2},${n.y}`,class:'decision node-shape'},g);
-      }else{
-        const cl=n.type==='start'?'flow-start':n.type==='highlight'?'flow-highlight':'flow-node';el('rect',{x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:n.type==='start'?30:13,class:cl+' node-shape'},g);
+
+          <div class="grid cols-3">
+            <article class="card module-card">
+              <div class="icon-box">
+                <svg fill="none" stroke="currentColor" stroke-width="1.8">
+                  <use href="#i-camera" />
+                </svg>
+              </div>
+              <h3>01. Smart Attendance</h3>
+              <p>
+                Check-in dan check-out memakai selfie kamera langsung, timestamp server,
+                lokasi GPS, watermark bukti hadir, jadwal kerja, izin/cuti, koreksi,
+                serta rekap alpha yang telah diverifikasi.
+              </p>
+              <div class="mini">Output → data kehadiran valid</div>
+            </article>
+
+            <article class="card module-card">
+              <div class="icon-box">
+                <svg fill="none" stroke="currentColor" stroke-width="1.8">
+                  <use href="#i-calendar" />
+                </svg>
+              </div>
+              <h3>02. Work Timeline</h3>
+              <p>
+                Senior membuat target dan tenggat bulanan. Junior dan anak magang memecah
+                target ke rencana mingguan dan tugas harian, mengunggah bukti,
+                lalu mengirim ke senior untuk disetujui atau direvisi.
+              </p>
+              <div class="mini" style="color: #168a77">Output → progres terverifikasi</div>
+            </article>
+
+            <article class="card module-card">
+              <div class="icon-box">
+                <svg fill="none" stroke="currentColor" stroke-width="1.8">
+                  <use href="#i-wallet" />
+                </svg>
+              </div>
+              <h3>03. Payroll Management</h3>
+              <p>
+                HR menutup data absensi periode berjalan. Sistem menyusun perhitungan
+                gaji/uang saku berdasarkan komponen dan aturan yang disetujui.
+                Tim Payroll meninjau, menyetujui, mengunduh Excel, dan mencatat pembayaran.
+              </p>
+              <div class="mini" style="color: #be8026">Output → rekap payroll &amp; Excel</div>
+            </article>
+          </div>
+
+          <div class="card story">
+            <div>
+              <strong>Prinsip utama: tugas selesai bukan berarti langsung disetujui.</strong>
+              <p>
+                Centang dari pelaksana mengubah status menjadi <b>Menunggu Verifikasi</b>.
+                Progres resmi bertambah setelah senior melakukan approval.
+              </p>
+            </div>
+            <span class="small-tag">Senior Approval Required</span>
+          </div>
+
+          <div class="card" style="margin-top: 16px; padding: 22px">
+            <div style="font-size: 13px; font-weight: 800; margin-bottom: 4px">
+              Fitur pendukung yang termasuk dalam cakupan
+            </div>
+            <p style="color: var(--muted); margin: 0 0 14px; font-size: 12px">
+              Melengkapi tiga modul utama tanpa mengubah alur inti absensi, verifikasi, dan penggajian.
+            </p>
+            <div class="grid cols-4" style="gap: 10px">
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Dashboard personal per role</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Gantt Chart &amp; kalender</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Notifikasi deadline / revisi</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Evidence file &amp; komentar</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Logbook kegiatan magang</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Laporan bulanan otomatis</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Evaluasi kinerja &amp; pencapaian</div>
+              <div class="data-pill" style="margin: 0; padding: 10px 12px">Peringatan target terlambat</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="usecases">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">02 / UML</p>
+              <h2>Use Case Diagram</h2>
+              <p>
+                Menjelaskan siapa yang berinteraksi dengan fungsi sistem.
+                Pilih modul untuk melihat aktor dan hubungan use case-nya.
+                Klik oval untuk membaca penjelasan fungsinya.
+              </p>
+            </div>
+            <span class="section-chip">Diagram interaktif</span>
+          </div>
+
+          <article class="card diagram-card">
+            <div class="diagram-toolbar">
+              <div class="tabs" role="tablist" aria-label="Pilih modul use case">
+                <button class="tab uc-tab" role="tab" aria-selected="true" data-tab="attendance">Absensi</button>
+                <button class="tab uc-tab" role="tab" aria-selected="false" data-tab="timeline">Timeline</button>
+                <button class="tab uc-tab" role="tab" aria-selected="false" data-tab="payroll">Payroll</button>
+              </div>
+              <span class="diagram-hint">
+                <svg fill="none" stroke="currentColor">
+                  <use href="#i-info" />
+                </svg>
+                Klik oval untuk detail • Geser pada layar kecil
+              </span>
+            </div>
+
+            <div class="diagram-panel" data-module="attendance" data-printtitle="Use Case — Absensi">
+              <div class="canvas" id="uc-attendance"></div>
+            </div>
+
+            <div class="diagram-panel" data-module="timeline" data-printtitle="Use Case — Timeline" hidden>
+              <div class="canvas" id="uc-timeline"></div>
+            </div>
+
+            <div class="diagram-panel" data-module="payroll" data-printtitle="Use Case — Payroll" hidden>
+              <div class="canvas" id="uc-payroll"></div>
+            </div>
+
+            <div class="detail-strip" id="ucDetail">
+              <div class="detail-symbol">i</div>
+              <div>
+                <strong>Pilih use case pada diagram</strong>
+                <p>Penjelasan tentang fungsi, pelaksana, dan hasil akan muncul di sini.</p>
+              </div>
+            </div>
+
+            <div class="diagram-note">
+              Notasi: figur orang = aktor, oval = fungsi (use case), garis = interaksi.
+              Aktor <b>Anggota Tim</b> mewakili Karyawan/Junior dan Anak Magang;
+              keduanya memiliki akun individual. Hak akses rinci ada pada matriks di bawah.
+            </div>
+          </article>
+        </section>
+
+        <section class="section" id="flowcharts">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">03 / Proses bisnis</p>
+              <h2>Flowchart Sistem</h2>
+              <p>
+                Memperlihatkan urutan proses dan keputusan utama.
+                Tersedia satu alur gambaran besar dan tiga alur operasional.
+                Klik setiap kotak untuk memahami logikanya.
+              </p>
+            </div>
+            <span class="section-chip">4 alur end-to-end</span>
+          </div>
+
+          <article class="card diagram-card">
+            <div class="diagram-toolbar">
+              <div class="tabs" role="tablist" aria-label="Pilih flowchart">
+                <button class="tab flow-tab" role="tab" aria-selected="true" data-tab="overviewFlow">Gambaran besar</button>
+                <button class="tab flow-tab" role="tab" aria-selected="false" data-tab="attendanceFlow">Absensi</button>
+                <button class="tab flow-tab" role="tab" aria-selected="false" data-tab="timelineFlow">Timeline</button>
+                <button class="tab flow-tab" role="tab" aria-selected="false" data-tab="payrollFlow">Payroll</button>
+              </div>
+              <span class="diagram-hint">
+                <svg fill="none" stroke="currentColor">
+                  <use href="#i-info" />
+                </svg>
+                Belah ketupat = keputusan
+              </span>
+            </div>
+
+            <div class="flow-panel" data-module="overviewFlow" data-printtitle="Flowchart — Gambaran Besar">
+              <div class="canvas" id="flow-overviewFlow"></div>
+              <p class="flow-caption">
+                Dua jalur berjalan berdampingan: jalur <b>kehadiran → payroll</b> dan
+                jalur <b>pekerjaan → verifikasi → evaluasi</b>.
+                Progres pekerjaan tidak otomatis menjadi dasar pemotongan gaji.
+              </p>
+            </div>
+
+            <div class="flow-panel" data-module="attendanceFlow" data-printtitle="Flowchart — Absensi" hidden>
+              <div class="canvas" id="flow-attendanceFlow"></div>
+              <p class="flow-caption">
+                Selfie masuk/pulang diambil langsung, kemudian sistem mengecek waktu,
+                lokasi, jadwal, dan kelengkapan. Jika gagal, tersedia pengulangan atau pengajuan koreksi.
+              </p>
+            </div>
+
+            <div class="flow-panel" data-module="timelineFlow" data-printtitle="Flowchart — Timeline" hidden>
+              <div class="canvas" id="flow-timelineFlow"></div>
+              <p class="flow-caption">
+                Senior memegang target utama dan otoritas final.
+                Junior/anak magang menyusun pekerjaan detail, mengirim bukti,
+                lalu menunggu keputusan senior.
+              </p>
+            </div>
+
+            <div class="flow-panel" data-module="payrollFlow" data-printtitle="Flowchart — Payroll" hidden>
+              <div class="canvas" id="flow-payrollFlow"></div>
+              <p class="flow-caption">
+                Koreksi absensi diselesaikan sebelum payroll closing.
+                Hanya data yang valid dan periode yang telah dikunci yang digunakan
+                untuk perhitungan final serta ekspor.
+              </p>
+            </div>
+
+            <div class="detail-strip" id="flowDetail">
+              <div class="detail-symbol">i</div>
+              <div>
+                <strong>Pilih sebuah tahapan pada flowchart</strong>
+                <p>Penjelasan masing-masing langkah akan ditampilkan di sini.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section" id="roles">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">04 / Organisasi</p>
+              <h2>Lima kelompok peran</h2>
+              <p>
+                Platform dibuat untuk satu perusahaan. Setiap pengguna memiliki profil dan
+                hak akses berdasarkan tanggung jawabnya; seorang pegawai dapat memiliki
+                lebih dari satu role bila dibutuhkan.
+              </p>
+            </div>
+          </div>
+
+          <div class="roles-grid">
+            <div class="card role-card">
+              <div class="tag">HR</div>
+              <h3>Admin / HR</h3>
+              <p>Master pegawai, jadwal, izin, koreksi absensi, validasi alpha dan penutupan data kehadiran.</p>
+            </div>
+            <div class="card role-card">
+              <div class="tag">SR</div>
+              <h3>Senior / Supervisor</h3>
+              <p>Target bulanan, batas waktu, pembagian tim, review evidence, revisi, dan evaluasi capaian.</p>
+            </div>
+            <div class="card role-card">
+              <div class="tag">JR</div>
+              <h3>Karyawan / Junior</h3>
+              <p>Absensi diri, rencana mingguan, tugas harian, bukti kerja, serta pemantauan hasil review.</p>
+            </div>
+            <div class="card role-card">
+              <div class="tag">MG</div>
+              <h3>Anak Magang</h3>
+              <p>Absensi, logbook magang, pekerjaan harian, unggah bukti, dan laporan magang.</p>
+            </div>
+            <div class="card role-card">
+              <div class="tag">PY</div>
+              <h3>Tim Payroll</h3>
+              <p>Melihat rekap payroll lintas departemen yang diotorisasi, review hasil, ekspor Excel dan pembayaran.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 16px; overflow: hidden">
+            <div class="matrix-intro">
+              <b style="color: #374663">Matriks hak akses utama</b> —
+              akses detail dapat dibatasi lagi berdasarkan departemen,
+              hubungan supervisor, dan level persetujuan.
+            </div>
+            <div class="matrix-wrap">
+              <table class="matrix">
+                <thead>
+                  <tr>
+                    <th>Aktivitas / Fitur</th>
+                    <th>Admin / HR</th>
+                    <th>Senior</th>
+                    <th>Karyawan</th>
+                    <th>Magang</th>
+                    <th>Payroll</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Absensi selfie milik sendiri</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                  </tr>
+                  <tr>
+                    <td>Mengajukan izin / sakit / cuti</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                  </tr>
+                  <tr>
+                    <td>Verifikasi izin dan koreksi absensi</td>
+                    <td class="yes">✓</td>
+                    <td class="limited">◐</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                  </tr>
+                  <tr>
+                    <td>Atur target dan deadline bulanan</td>
+                    <td class="limited">◐</td>
+                    <td class="yes">✓</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                  </tr>
+                  <tr>
+                    <td>Buat / ubah rencana mingguan dan tugas sendiri</td>
+                    <td class="limited">◐</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="no">—</td>
+                  </tr>
+                  <tr>
+                    <td>Unggah evidence, checklist tugas</td>
+                    <td class="limited">◐</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="no">—</td>
+                  </tr>
+                  <tr>
+                    <td>Verifikasi hasil pekerjaan anggota tim</td>
+                    <td class="limited">◐</td>
+                    <td class="yes">✓</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                  </tr>
+                  <tr>
+                    <td>Rekap kehadiran &amp; closing absensi</td>
+                    <td class="yes">✓</td>
+                    <td class="limited">◐</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="limited">◐</td>
+                  </tr>
+                  <tr>
+                    <td>Kelola komponen gaji dan uang saku</td>
+                    <td class="limited">◐</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="limited">◐</td>
+                  </tr>
+                  <tr>
+                    <td>Hitung, review dan finalisasi payroll</td>
+                    <td class="limited">◐</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="yes">✓</td>
+                  </tr>
+                  <tr>
+                    <td>Export payroll Excel (.xlsx)</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="no">—</td>
+                    <td class="yes">✓</td>
+                  </tr>
+                  <tr>
+                    <td>Lihat slip sendiri (bila berlaku)</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                    <td class="yes">✓</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="matrix-legend">
+              <span><b class="yes">✓</b> Diizinkan sesuai cakupan data</span>
+              <span><b class="limited">◐</b> Bersyarat / hanya atas otorisasi</span>
+              <span><b class="no">—</b> Tidak diizinkan</span>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 16px; padding: 22px">
+            <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 13px">
+              <div>
+                <b style="font-size: 14px">Format Export Payroll (.xlsx)</b>
+                <p style="font-size: 12px; color: var(--muted); margin: 3px 0 0">
+                  Tersedia setelah payroll disetujui, dengan filter periode,
+                  departemen, status pegawai, dan status pembayaran.
+                </p>
+              </div>
+              <span class="small-tag" style="background: #edf1ff; color: #5466dc; border: 1px solid #d7dfff; border-radius: 7px; padding: 7px 10px; font-size: 11px; font-weight: 750">
+                4 Sheet Excel
+              </span>
+            </div>
+            <div class="grid cols-4" style="gap: 11px">
+              <div style="padding: 13px; background: #f7f9fe; border: 1px solid #e8edf6; border-radius: 11px">
+                <b style="font-size: 12px">01 · Rekap Payroll</b>
+                <p style="margin: 6px 0 0; color: #74819a; font-size: 11px">
+                  Identitas, departemen, gaji pokok, tunjangan, potongan, gaji bersih.
+                </p>
+              </div>
+              <div style="padding: 13px; background: #f7f9fe; border: 1px solid #e8edf6; border-radius: 11px">
+                <b style="font-size: 12px">02 · Detail Absensi</b>
+                <p style="margin: 6px 0 0; color: #74819a; font-size: 11px">
+                  Hari kerja, hadir, izin, sakit, cuti, alpha, keterlambatan.
+                </p>
+              </div>
+              <div style="padding: 13px; background: #f7f9fe; border: 1px solid #e8edf6; border-radius: 11px">
+                <b style="font-size: 12px">03 · Rincian Hitung</b>
+                <p style="margin: 6px 0 0; color: #74819a; font-size: 11px">
+                  Rumus dan rincian setiap komponen penggajian atau uang saku.
+                </p>
+              </div>
+              <div style="padding: 13px; background: #f7f9fe; border: 1px solid #e8edf6; border-radius: 11px">
+                <b style="font-size: 12px">04 · Per Departemen</b>
+                <p style="margin: 6px 0 0; color: #74819a; font-size: 11px">
+                  Ringkasan biaya gaji, potongan dan status pembayaran per unit.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="business">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">05 / Aturan bisnis</p>
+              <h2>Aturan yang harus disepakati</h2>
+              <p>
+                Ini adalah kebijakan dasar sebelum pengembangan dimulai.
+                Kebijakan aktual disahkan perusahaan dan diterapkan sebagai konfigurasi,
+                bukan angka yang ditanam permanen di kode.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid cols-2">
+            <div class="card rules">
+              <div class="rule">
+                <span class="rule-icon">01</span>
+                <div>
+                  <strong>Absensi 2 kali per hari kerja</strong>
+                  <p>
+                    Check-in dan check-out menggunakan kamera. Tanggal/jam bersumber dari server;
+                    GPS dan nama lokasi divalidasi. Jam kerja dan radius lokasi dapat dikonfigurasi.
+                  </p>
+                </div>
+              </div>
+              <div class="rule">
+                <span class="rule-icon">02</span>
+                <div>
+                  <strong>Koreksi dan izin lebih dulu dari status alpha</strong>
+                  <p>
+                    Absen kosong tidak serta-merta dianggap alpha.
+                    Sistem memeriksa hari libur, jadwal, cuti, sakit, izin, dinas luar,
+                    dan permintaan koreksi.
+                  </p>
+                </div>
+              </div>
+              <div class="rule">
+                <span class="rule-icon">03</span>
+                <div>
+                  <strong>Approval senior menentukan progres resmi</strong>
+                  <p>
+                    Status tugas: Draft → Dikerjakan → Menunggu Verifikasi → Disetujui / Perlu Revisi.
+                    Setiap revisi meninggalkan riwayat.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="card rules">
+              <div class="rule">
+                <span class="rule-icon">04</span>
+                <div>
+                  <strong>Pemotongan berdasarkan kebijakan yang sah</strong>
+                  <p>
+                    Hanya alpha yang telah diverifikasi dan termasuk kategori yang secara hukum
+                    dapat memengaruhi upah yang diproses. Komponen gaji dan uang saku magang dipisah.
+                  </p>
+                </div>
+              </div>
+              <div class="rule">
+                <span class="rule-icon">05</span>
+                <div>
+                  <strong>Payroll closing &amp; audit trail</strong>
+                  <p>
+                    HR mengunci absensi periode; Payroll meninjau hasil, menyetujui, ekspor Excel,
+                    lalu mencatat pembayaran. Koreksi sesudah closing butuh persetujuan dan riwayat.
+                  </p>
+                </div>
+              </div>
+              <div class="rule">
+                <span class="rule-icon">06</span>
+                <div>
+                  <strong>Privasi dan akses berdasarkan kebutuhan</strong>
+                  <p>
+                    Foto wajah, koordinat lokasi, NIK, dan gaji adalah data sensitif secara operasional.
+                    Terapkan pembatasan akses, enkripsi, retensi, pencatatan akses, dan kebijakan privasi.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="data">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">06 / Rancangan awal</p>
+              <h2>Data yang saling terhubung</h2>
+              <p>
+                Supaya tidak menjadi prototipe terpisah, seluruh modul harus membaca
+                data master dan menyimpan perubahan ke database utama.
+                Diagram ini menjelaskan alur dependensi datanya, bukan struktur tabel final.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid cols-3">
+            <article class="card module-card" style="min-height: 0">
+              <h3 style="margin-top: 0">Identitas &amp; Absensi</h3>
+              <p>
+                Informasi profil, penempatan, relasi atasan, jadwal, lokasi kerja,
+                foto kehadiran, koordinat, izin, koreksi, dan periode kehadiran.
+              </p>
+              <div>
+                <span class="data-pill">employees</span>
+                <span class="data-pill">roles</span>
+                <span class="data-pill">work_schedules</span>
+                <span class="data-pill">attendances</span>
+                <span class="data-pill">leave_requests</span>
+              </div>
+            </article>
+            <article class="card module-card" style="min-height: 0">
+              <h3 style="margin-top: 0">Pekerjaan &amp; Evaluasi</h3>
+              <p>
+                Target bulanan, milestone, rencana mingguan, task harian, evidence,
+                komentar, persetujuan, bobot progres, dan logbook magang.
+              </p>
+              <div>
+                <span class="data-pill">monthly_targets</span>
+                <span class="data-pill">weekly_plans</span>
+                <span class="data-pill">tasks</span>
+                <span class="data-pill">evidences</span>
+                <span class="data-pill">task_reviews</span>
+              </div>
+            </article>
+            <article class="card module-card" style="min-height: 0">
+              <h3 style="margin-top: 0">Gaji &amp; Audit</h3>
+              <p>
+                Komponen gaji, aturan payroll, penutupan periode, hasil perhitungan,
+                otorisasi, berkas Excel, slip, pembayaran, dan audit trail.
+              </p>
+              <div>
+                <span class="data-pill">salary_components</span>
+                <span class="data-pill">payroll_periods</span>
+                <span class="data-pill">payroll_items</span>
+                <span class="data-pill">payments</span>
+                <span class="data-pill">audit_logs</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="alert" style="margin-top: 16px">
+            <svg fill="none" stroke="currentColor" stroke-width="2">
+              <use href="#i-info" />
+            </svg>
+            <div>
+              <strong>Rencana keamanan dan implementasi</strong>
+              <p>
+                Gunakan autentikasi terpusat, RBAC di backend, validasi semua aksi di server,
+                penyimpanan foto privat, akses terproteksi untuk export payroll, jejak perubahan,
+                serta backup database.
+                Selfie + watermark GPS bukan jaminan identitas atau lokasi yang sepenuhnya anti-manipulasi.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="roadmap">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">07 / Eksekusi</p>
+              <h2>Rencana pengembangan bertahap</h2>
+              <p>
+                Pengerjaan diprioritaskan agar alur utama selesai dan teruji sebelum
+                fitur lanjutan ditambahkan. Proyek ini dirancang untuk satu perusahaan,
+                dengan antarmuka desktop dan mobile yang konsisten.
+              </p>
+            </div>
+          </div>
+
+          <div class="steps">
+            <div class="card step-card">
+              <div class="step-badge">Fase 01 • Fondasi</div>
+              <h3>Identitas &amp; kehadiran</h3>
+              <p>
+                Pastikan pegawai bisa login, absensi, dan melihat riwayat,
+                sementara HR bisa memverifikasi data.
+              </p>
+              <ul>
+                <li>Role &amp; user management</li>
+                <li>Selfie, GPS, watermark, jadwal</li>
+                <li>Izin, cuti, koreksi &amp; validasi</li>
+              </ul>
+            </div>
+            <div class="card step-card">
+              <div class="step-badge">Fase 02 • Kinerja</div>
+              <h3>Timeline &amp; approval</h3>
+              <p>
+                Mulai dari target bulanan sampai laporan kegiatan yang diverifikasi senior.
+              </p>
+              <ul>
+                <li>Target, milestone dan deadline</li>
+                <li>Rencana mingguan &amp; task harian</li>
+                <li>Evidence, revisi &amp; progress report</li>
+              </ul>
+            </div>
+            <div class="card step-card">
+              <div class="step-badge">Fase 03 • Finansial</div>
+              <h3>Payroll &amp; pelaporan</h3>
+              <p>
+                Perhitungan ditarik dari absensi yang sudah disahkan, lalu diproses Tim Payroll.
+              </p>
+              <ul>
+                <li>Payroll closing dan approval</li>
+                <li>Export Excel beberapa sheet &amp; slip</li>
+                <li>Riwayat pembayaran &amp; audit trail</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <span>
+            <b>DualStack</b> ·
+            Blueprint konsep sistem internal perusahaan ·
+            Versi 1.0
+          </span>
+          <span>Dokumen perencanaan, bukan aplikasi produksi atau perhitungan payroll nyata.</span>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const NS = 'http://www.w3.org/2000/svg';
+
+      function el(tag, attrs = {}, parent) {
+        const node = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) {
+          node.setAttribute(k, String(v));
+        }
+        if (parent) {
+          parent.appendChild(node);
+        }
+        return node;
       }
-      const titleBase=n.sub?n.y-5:n.y+3;lineText(g,n.label,n.x,titleBase-(n.label.length-1)*1.5,'flow-title',18);
-      if(n.sub)textSvg(g,n.x,n.y+(n.type==='decision'?37:25),n.sub,'flow-sub');
-      const choose=()=>{svg.querySelectorAll('[data-node]').forEach(x=>x.classList.remove('selected'));g.classList.add('selected');setDetail('flowDetail',n.label.join(' '),n.desc);};g.addEventListener('click',choose);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}});
-    });
-  }
-  Object.keys(uc).forEach(drawUseCase);Object.keys(flows).forEach(flowGraph);
-  function installTabs(tabClass,panelClass,initial){document.querySelectorAll('.'+tabClass).forEach(btn=>{btn.addEventListener('click',()=>{const key=btn.dataset.tab;document.querySelectorAll('.'+tabClass).forEach(b=>b.setAttribute('aria-selected',String(b===btn)));document.querySelectorAll('.'+panelClass).forEach(p=>p.hidden=p.dataset.module!==key);if(tabClass==='uc-tab')setDetail('ucDetail','Modul '+(uc[key]?.title||key),'Klik oval pada diagram untuk membaca fungsi serta tanggung jawab aktornya.');else setDetail('flowDetail','Flowchart: '+btn.textContent,'Klik kotak atau keputusan pada diagram untuk melihat logika proses.');});});}
-  installTabs('uc-tab','diagram-panel');installTabs('flow-tab','flow-panel');
-  const sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
-  const closeNav=()=>{sidebar.classList.remove('show');overlay.classList.remove('show');};
-  document.getElementById('menuButton').addEventListener('click',()=>{sidebar.classList.toggle('show');overlay.classList.toggle('show');});overlay.addEventListener('click',closeNav);
-  document.querySelectorAll('.nav-link').forEach(a=>a.addEventListener('click',closeNav));
-  if('IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{const v=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v){document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+v.target.id));}},{rootMargin:'-22% 0px -65% 0px',threshold:0});document.querySelectorAll('.content section[id]').forEach(s=>io.observe(s));}
-  // Print all tabs, not only the currently selected diagram.
-  window.addEventListener('beforeprint',()=>{document.querySelectorAll('.diagram-panel,.flow-panel').forEach(p=>p.hidden=false);});
-  window.addEventListener('afterprint',()=>{const ucKey=document.querySelector('.uc-tab[aria-selected="true"]').dataset.tab;const flowKey=document.querySelector('.flow-tab[aria-selected="true"]').dataset.tab;document.querySelectorAll('.diagram-panel').forEach(p=>p.hidden=p.dataset.module!==ucKey);document.querySelectorAll('.flow-panel').forEach(p=>p.hidden=p.dataset.module!==flowKey);});
-})();
-</script>
+
+      function textSvg(svg, x, y, value, klass, anchor = 'middle') {
+        const t = el('text', { x, y, 'text-anchor': anchor, class: klass }, svg);
+        t.textContent = value;
+        return t;
+      }
+
+      function lineText(group, lines, x, y, className, lineHeight = 17) {
+        const start = y - ((lines.length - 1) * lineHeight / 2);
+        lines.forEach((s, i) => textSvg(group, x, start + i * lineHeight, s, className));
+      }
+
+      function setDetail(id, title, description) {
+        document.getElementById(id).innerHTML =
+          '<div class="detail-symbol">✓</div>' +
+          '<div>' +
+          '<strong>' + escapeHTML(title) + '</strong>' +
+          '<p>' + escapeHTML(description) + '</p>' +
+          '</div>';
+      }
+
+      function escapeHTML(s) {
+        return String(s).replace(/[&<>"']/g, ch => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[ch]));
+      }
+
+      const uc = {
+        attendance: {
+          title: 'SMART ATTENDANCE',
+          actors: [
+            {
+              id: 'staff',
+              name: ['Karyawan /', 'Junior & Magang'],
+              x: 132,
+              y: 260,
+              side: 'left'
+            },
+            {
+              id: 'hr',
+              name: ['Admin / HR'],
+              x: 1090,
+              y: 350,
+              side: 'right'
+            }
+          ],
+          cases: [
+            {
+              id: 'checkin',
+              x: 480,
+              y: 145,
+              label: ['Check-in dengan', 'selfie'],
+              desc: 'Anggota tim mengambil selfie dari kamera browser saat datang. Sistem merekam waktu server dan lokasi yang dapat diverifikasi.'
+            },
+            {
+              id: 'checkout',
+              x: 750,
+              y: 145,
+              label: ['Check-out dengan', 'selfie'],
+              desc: 'Anggota tim mengambil selfie saat pulang. Sistem mengaitkan check-out dengan hari kerja atau shift yang sesuai.'
+            },
+            {
+              id: 'leave',
+              x: 480,
+              y: 303,
+              label: ['Pengajuan izin,', 'sakit dan cuti'],
+              desc: 'Anggota tim mengajukan ketidakhadiran dengan alasan dan dokumen pendukung jika diperlukan.'
+            },
+            {
+              id: 'history',
+              x: 750,
+              y: 303,
+              label: ['Riwayat', 'kehadiran'],
+              desc: 'Anggota tim meninjau data check-in, check-out, lokasi, dan status kehadiran miliknya.'
+            },
+            {
+              id: 'validation',
+              x: 480,
+              y: 465,
+              label: ['Verifikasi & koreksi', 'absensi'],
+              desc: 'HR memvalidasi data yang tidak lengkap, pengajuan koreksi, izin, serta status alpha sebelum payroll closing.'
+            },
+            {
+              id: 'recap',
+              x: 750,
+              y: 465,
+              label: ['Rekap absensi', 'per periode'],
+              desc: 'HR membuat ringkasan kehadiran per individu, tim, departemen, dan periode untuk keperluan monitoring serta payroll.'
+            }
+          ],
+          links: [
+            ['staff', 'checkin'],
+            ['staff', 'checkout'],
+            ['staff', 'leave'],
+            ['staff', 'history'],
+            ['hr', 'validation'],
+            ['hr', 'recap']
+          ]
+        },
+        timeline: {
+          title: 'WORK TIMELINE & APPROVAL',
+          actors: [
+            {
+              id: 'senior',
+              name: ['Senior /', 'Supervisor'],
+              x: 132,
+              y: 300,
+              side: 'left'
+            },
+            {
+              id: 'staff',
+              name: ['Karyawan /', 'Junior & Magang'],
+              x: 1090,
+              y: 332,
+              side: 'right'
+            }
+          ],
+          cases: [
+            {
+              id: 'target',
+              x: 480,
+              y: 145,
+              label: ['Atur target &', 'deadline bulanan'],
+              desc: 'Senior membuat target bulanan dan milestone lengkap dengan tenggat, prioritas, dan penanggung jawab.'
+            },
+            {
+              id: 'weekly',
+              x: 750,
+              y: 145,
+              label: ['Rencana mingguan', 'dan harian'],
+              desc: 'Pelaksana memecah target menjadi rencana mingguan serta tugas harian di bawah target yang diberikan.'
+            },
+            {
+              id: 'evidence',
+              x: 480,
+              y: 303,
+              label: ['Update progres &', 'unggah evidence'],
+              desc: 'Pelaksana mencatat progres task dan mengunggah dokumen, foto, tautan, serta catatan hasil kerja.'
+            },
+            {
+              id: 'submit',
+              x: 750,
+              y: 303,
+              label: ['Ajukan penyelesaian', 'pekerjaan'],
+              desc: 'Setelah checklist, pelaksana mengajukan tugas untuk diverifikasi senior. Tugas tidak otomatis menjadi completed resmi.'
+            },
+            {
+              id: 'verify',
+              x: 480,
+              y: 465,
+              label: ['Review, setujui', 'atau revisi'],
+              desc: 'Senior memeriksa evidence, menerima atau mengembalikan tugas dengan catatan revisi. Semua keputusan tercatat.'
+            },
+            {
+              id: 'report',
+              x: 750,
+              y: 465,
+              label: ['Laporan & evaluasi', 'pencapaian'],
+              desc: 'Sistem menyusun ringkasan progres terverifikasi, target terlambat, hasil kerja, dan logbook magang.'
+            }
+          ],
+          links: [
+            ['senior', 'target'],
+            ['senior', 'verify'],
+            ['senior', 'report'],
+            ['staff', 'weekly'],
+            ['staff', 'evidence'],
+            ['staff', 'submit'],
+            ['staff', 'report']
+          ]
+        },
+        payroll: {
+          title: 'PAYROLL MANAGEMENT',
+          actors: [
+            {
+              id: 'hr',
+              name: ['Admin / HR'],
+              x: 132,
+              y: 330,
+              side: 'left'
+            },
+            {
+              id: 'payroll',
+              name: ['Tim Payroll'],
+              x: 1090,
+              y: 330,
+              side: 'right'
+            }
+          ],
+          cases: [
+            {
+              id: 'attendanceClose',
+              x: 480,
+              y: 145,
+              label: ['Validasi & closing', 'data kehadiran'],
+              desc: 'HR menyelesaikan koreksi/izin yang tertunda, memverifikasi alpha, lalu mengunci rekap absensi periode.'
+            },
+            {
+              id: 'salarySetup',
+              x: 750,
+              y: 145,
+              label: ['Kelola komponen', 'penggajian'],
+              desc: 'Petugas berotorisasi menetapkan gaji pokok, tunjangan, komponen wajib, serta aturan penyesuaian yang sah.'
+            },
+            {
+              id: 'calculate',
+              x: 480,
+              y: 303,
+              label: ['Generate hasil', 'payroll'],
+              desc: 'Sistem menghitung gaji dan uang saku sesuai periode dengan data kehadiran dan pengaturan yang telah disahkan.'
+            },
+            {
+              id: 'approve',
+              x: 750,
+              y: 303,
+              label: ['Review dan', 'approve payroll'],
+              desc: 'Tim Payroll mengecek hasil per individu dan total. Persetujuan final mengikuti kewenangan perusahaan.'
+            },
+            {
+              id: 'excel',
+              x: 480,
+              y: 465,
+              label: ['Ekspor Excel (.xlsx)', 'dan slip gaji'],
+              desc: 'Tim Payroll mengunduh Excel multi-sheet berisi ringkasan, absensi, rincian komponen, dan per departemen; slip gaji sesuai izin.'
+            },
+            {
+              id: 'paid',
+              x: 750,
+              y: 465,
+              label: ['Catat pembayaran', '& audit trail'],
+              desc: 'Setelah pembayaran, Tim Payroll menandai status Paid dan sistem menyimpan riwayat penutupan, ekspor, serta perubahan.'
+            }
+          ],
+          links: [
+            ['hr', 'attendanceClose'],
+            ['hr', 'salarySetup'],
+            ['payroll', 'calculate'],
+            ['payroll', 'approve'],
+            ['payroll', 'excel'],
+            ['payroll', 'paid']
+          ]
+        }
+      };
+
+      function drawActor(svg, a) {
+        const g = el('g', { 'data-actor': a.id }, svg);
+        const y = a.y;
+        el('circle', { cx: a.x, cy: y - 39, r: 11, class: 'actor-art' }, g);
+        el('path', {
+          d: 'M' + a.x + ' ' + (y - 28) + ' V' + (y + 9) +
+            ' M' + (a.x - 23) + ' ' + (y - 11) + ' H' + (a.x + 23) +
+            ' M' + a.x + ' ' + (y + 9) + ' L' + (a.x - 18) + ' ' + (y + 36) +
+            ' M' + a.x + ' ' + (y + 9) + ' L' + (a.x + 18) + ' ' + (y + 36),
+          class: 'actor-art'
+        }, g);
+        lineText(g, a.name, a.x, y + 55, 'uml-label', 17);
+        return g;
+      }
+
+      function drawUseCase(key) {
+        const d = uc[key];
+        const parent = document.getElementById('uc-' + key);
+        const svg = el('svg', {
+          class: 'diagram',
+          viewBox: '0 0 1220 595',
+          role: 'img',
+          'aria-label': 'Diagram UML Use Case ' + d.title
+        }, parent);
+
+        el('rect', { x: 257, y: 38, width: 706, height: 529, rx: 16, fill: '#f6f8ff', stroke: '#bac5df', 'stroke-width': 1.7 }, svg);
+        el('rect', { x: 430, y: 19, width: 360, height: 35, rx: 9, fill: '#e9edff', stroke: '#bdc9ec' }, svg);
+        textSvg(svg, 610, 41, d.title, 'module-head');
+
+        const amap = Object.fromEntries(d.actors.map(x => [x.id, x]));
+        const cmap = Object.fromEntries(d.cases.map(x => [x.id, x]));
+
+        d.links.forEach(([actorId, caseId]) => {
+          const a = amap[actorId];
+          const c = cmap[caseId];
+          const sx = a.x + (a.side === 'left' ? 29 : -29);
+          const sy = a.y - 6;
+          const ex = c.x + (a.side === 'left' ? -120 : 120);
+          const ey = c.y;
+          el('path', {
+            d: 'M' + sx + ' ' + sy + ' L' + ex + ' ' + ey,
+            class: 'connection'
+          }, svg);
+        });
+
+        d.actors.forEach(a => drawActor(svg, a));
+
+        d.cases.forEach(c => {
+          const g = el('g', {
+            'data-node': c.id,
+            tabindex: 0,
+            role: 'button',
+            'aria-label': c.label.join(' ')
+          }, svg);
+          el('ellipse', { cx: c.x, cy: c.y, rx: 125, ry: 46, class: 'uc-ellipse node-shape' }, g);
+          lineText(g, c.label, c.x, c.y + 5, 'uml-label', 17);
+
+          const select = () => {
+            svg.querySelectorAll('[data-node]').forEach(n => n.classList.remove('selected'));
+            g.classList.add('selected');
+            setDetail('ucDetail', c.label.join(' '), c.desc);
+          };
+
+          g.addEventListener('click', select);
+          g.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              select();
+            }
+          });
+        });
+      }
+
+      const flows = {
+        overviewFlow: {
+          height: 795,
+          nodes: [
+            {
+              id: 'start',
+              x: 590,
+              y: 79,
+              w: 265,
+              h: 66,
+              type: 'start',
+              label: ['Periode kerja dimulai'],
+              sub: 'akun + jadwal + target',
+              desc: 'Setiap pekerja memiliki profil, jadwal, supervisor, dan target yang relevan untuk periode berjalan.'
+            },
+            {
+              id: 'attend',
+              x: 300,
+              y: 228,
+              w: 253,
+              h: 80,
+              type: 'card',
+              label: ['Check-in & check-out'],
+              sub: 'Selfie + GPS + watermark',
+              desc: 'Karyawan dan anak magang melakukan dua absensi pada hari kerja, dengan selfie dan waktu terverifikasi.'
+            },
+            {
+              id: 'task',
+              x: 880,
+              y: 228,
+              w: 253,
+              h: 80,
+              type: 'highlight',
+              label: ['Target bulanan → task'],
+              sub: 'Senior → pelaksana',
+              desc: 'Senior menentukan target; anggota tim membuat rencana mingguan, harian, dan melengkapi evidence pekerjaan.'
+            },
+            {
+              id: 'hr',
+              x: 300,
+              y: 396,
+              w: 253,
+              h: 80,
+              type: 'card',
+              label: ['Validasi kehadiran'],
+              sub: 'HR cek izin & alpha',
+              desc: 'HR memverifikasi ketidakhadiran dan menuntaskan koreksi untuk menutup periode absensi.'
+            },
+            {
+              id: 'review',
+              x: 880,
+              y: 396,
+              w: 253,
+              h: 80,
+              type: 'card',
+              label: ['Verifikasi senior'],
+              sub: 'Setuju atau revisi',
+              desc: 'Progres yang telah dilaporkan belum final sebelum diverifikasi oleh senior.'
+            },
+            {
+              id: 'pay',
+              x: 300,
+              y: 574,
+              w: 253,
+              h: 80,
+              type: 'highlight',
+              label: ['Hitung payroll'],
+              sub: 'Payroll review + Excel',
+              desc: 'Payroll dihitung dari komponen yang disahkan dan kehadiran valid. Tim Payroll mengulas serta mengekspor hasil.'
+            },
+            {
+              id: 'report',
+              x: 880,
+              y: 574,
+              w: 253,
+              h: 80,
+              type: 'highlight',
+              label: ['Progress & evaluasi'],
+              sub: 'Laporan pekerjaan',
+              desc: 'Hasil verifikasi menjadi progress resmi, evaluasi bulanan, dan logbook kegiatan magang.'
+            }
+          ],
+          edges: [
+            { d: 'M590 112 L590 162 L300 162 L300 188' },
+            { d: 'M590 112 L590 162 L880 162 L880 188' },
+            { d: 'M300 269 L300 356' },
+            { d: 'M880 269 L880 356' },
+            { d: 'M300 437 L300 534' },
+            { d: 'M880 437 L880 534' }
+          ]
+        },
+        attendanceFlow: {
+          height: 825,
+          nodes: [
+            {
+              id: 'a1',
+              x: 590,
+              y: 63,
+              w: 280,
+              h: 66,
+              type: 'start',
+              label: ['Buka menu Absensi'],
+              sub: 'Pengguna sudah login',
+              desc: 'Pengguna mengakses modul absensi menggunakan akun aktif.'
+            },
+            {
+              id: 'a2',
+              x: 590,
+              y: 213,
+              w: 280,
+              h: 66,
+              type: 'card',
+              label: ['Pilih tanggal & jam kerja'],
+              sub: 'Cek jadwal aktif',
+              desc: 'Sistem menampilkan jadwal kerja dan shift yang berlaku untuk pengguna.'
+            },
+            {
+              id: 'a3',
+              x: 590,
+              y: 368,
+              w: 280,
+              h: 66,
+              type: 'decision',
+              label: ['Waktu sesuai jadwal?'],
+              sub: '',
+              desc: 'Sistem memeriksa apakah waktu absensi sesuai dengan jadwal kerja yang berlaku.'
+            },
+            {
+              id: 'a4',
+              x: 590,
+              y: 513,
+              w: 280,
+              h: 66,
+              type: 'decision',
+              label: ['Lokasi dalam radius?'],
+              sub: 'Cek GPS & radius',
+              desc: 'Sistem memvalidasi koordinat GPS pengguna terhadap radius yang diizinkan.'
+            },
+            {
+              id: 'a5',
+              x: 230,
+              y: 513,
+              w: 230,
+              h: 66,
+              type: 'flow-node',
+              label: ['Ambil foto selfie'],
+              sub: 'Kamera browser',
+              desc: 'Pengguna mengambil foto selfie melalui kamera perangkat.'
+            },
+            {
+              id: 'a6',
+              x: 230,
+              y: 658,
+              w: 230,
+              h: 66,
+              type: 'flow-node',
+              label: ['Rekam data kehadiran'],
+              sub: 'Timestamp + GPS + Foto',
+              desc: 'Sistem menyimpan timestamp server, koordinat GPS, dan foto sebagai bukti kehadiran.'
+            },
+            {
+              id: 'a7',
+              x: 590,
+              y: 658,
+              w: 280,
+              h: 66,
+              type: 'highlight',
+              label: ['Tampilkan bukti hadir'],
+              sub: 'Selfie + watermark',
+              desc: 'Sistem menampilkan bukti kehadiran dengan watermark waktu dan lokasi.'
+            }
+          ],
+          edges: [
+            { d: 'M590 129 L590 167' },
+            { d: 'M590 279 L590 322' },
+            { d: 'M590 434 L590 467' },
+            { d: 'M590 579 L590 611' },
+            { d: 'M590 579 L380 579 L380 546' },
+            { d: 'M380 579 L380 612' },
+            { d: 'M460 658 L590 658' }
+          ]
+        },
+        timelineFlow: {
+          height: 825,
+          nodes: [
+            {
+              id: 't1',
+              x: 590,
+              y: 63,
+              w: 280,
+              h: 66,
+              type: 'start',
+              label: ['Senior buat target bulanan'],
+              sub: 'Milestone + deadline',
+              desc: 'Senior membuat target kerja bulanan dengan milestone dan tenggat yang jelas.'
+            },
+            {
+              id: 't2',
+              x: 590,
+              y: 213,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Pecah ke rencana mingguan'],
+              sub: 'Junior / Magang',
+              desc: 'Pelaksana memecah target bulanan menjadi rencana mingguan yang lebih detail.'
+            },
+            {
+              id: 't3',
+              x: 590,
+              y: 368,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Buat task harian'],
+              sub: 'Tugas spesifik per hari',
+              desc: 'Pelaksana menyusun tugas harian untuk mencapai rencana mingguan.'
+            },
+            {
+              id: 't4',
+              x: 590,
+              y: 513,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Kerjakan & upload evidence'],
+              sub: 'Bukti pekerjaan',
+              desc: 'Pelaksana menyelesaikan tugas dan mengunggah bukti hasil kerja.'
+            },
+            {
+              id: 't5',
+              x: 590,
+              y: 658,
+              w: 280,
+              h: 66,
+              type: 'decision',
+              label: ['Ajukan ke Senior?'],
+              sub: '',
+              desc: 'Pelaksana mengajukan tugas yang sudah diceklist untuk diverifikasi senior.'
+            }
+          ],
+          edges: [
+            { d: 'M590 129 L590 167' },
+            { d: 'M590 279 L590 322' },
+            { d: 'M590 434 L590 467' },
+            { d: 'M590 579 L590 611' }
+          ]
+        },
+        payrollFlow: {
+          height: 825,
+          nodes: [
+            {
+              id: 'p1',
+              x: 590,
+              y: 63,
+              w: 280,
+              h: 66,
+              type: 'start',
+              label: ['HR closing absensi'],
+              sub: 'Validasi & kunci data',
+              desc: 'HR menyelesaikan semua koreksi dan mengunci data absensi periode berjalan.'
+            },
+            {
+              id: 'p2',
+              x: 590,
+              y: 213,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Generate payroll'],
+              sub: 'Hitung komponen gaji',
+              desc: 'Sistem menghitung gaji berdasarkan data absensi valid dan komponen yang disahkan.'
+            },
+            {
+              id: 'p3',
+              x: 590,
+              y: 368,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Payroll review & approve'],
+              sub: 'Tim Payroll',
+              desc: 'Tim Payroll meninjau hasil perhitungan dan memberikan persetujuan.'
+            },
+            {
+              id: 'p4',
+              x: 590,
+              y: 513,
+              w: 280,
+              h: 66,
+              type: 'flow-node',
+              label: ['Export Excel multi-sheet'],
+              sub: '.xlsx 4 sheet',
+              desc: 'Tim Payroll mengekspor hasil payroll ke file Excel dengan beberapa lembar kerja.'
+            },
+            {
+              id: 'p5',
+              x: 590,
+              y: 658,
+              w: 280,
+              h: 66,
+              type: 'highlight',
+              label: ['Catat pembayaran'],
+              sub: 'Status Paid',
+              desc: 'Setelah pembayaran dilakukan, tim Payroll menandai status dan menyimpan audit trail.'
+            }
+          ],
+          edges: [
+            { d: 'M590 129 L590 167' },
+            { d: 'M590 279 L590 322' },
+            { d: 'M590 434 L590 467' },
+            { d: 'M590 579 L590 611' }
+          ]
+        }
+      };
+
+      function drawFlow(key) {
+        const d = flows[key];
+        const parent = document.getElementById('flow-' + key);
+        const svg = el('svg', {
+          class: 'diagram',
+          viewBox: '0 0 1220 ' + d.height,
+          role: 'img',
+          'aria-label': 'Flowchart ' + key
+        }, parent);
+
+        d.nodes.forEach(n => {
+          const g = el('g', { 'data-node': n.id, tabindex: 0, role: 'button', 'aria-label': n.label.join(' ') }, svg);
+          let shapeClass = 'flow-node';
+          if (n.type === 'start') {
+            shapeClass = 'flow-start';
+          } else if (n.type === 'highlight') {
+            shapeClass = 'flow-highlight';
+          } else if (n.type === 'decision') {
+            shapeClass = 'decision';
+          }
+          el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 12, class: shapeClass + ' node-shape' }, g);
+          el('text', { x: n.x + n.w / 2, y: n.y + 28, 'text-anchor': 'middle', class: 'flow-title' }, g).textContent = n.label[0];
+          if (n.label[1]) {
+            el('text', { x: n.x + n.w / 2, y: n.y + 46, 'text-anchor': 'middle', class: 'flow-sub' }, g).textContent = n.label[1];
+          }
+          el('text', { x: n.x + n.w / 2, y: n.y + n.h - 12, 'text-anchor': 'middle', class: 'flow-sub' }, g).textContent = n.sub;
+
+          const showDetail = () => {
+            svg.querySelectorAll('[data-node]').forEach(node => node.classList.remove('selected'));
+            g.classList.add('selected');
+            setDetail('flowDetail', n.label.join(' '), n.desc);
+          };
+          g.addEventListener('click', showDetail);
+          g.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              showDetail();
+            }
+          });
+        });
+
+        d.edges.forEach(e => {
+          el('path', { d: e.d, class: 'edge-path' }, svg);
+        });
+      }
+
+      // Initialize tabs
+      document.querySelectorAll('.uc-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.uc-tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+          tab.setAttribute('aria-selected', 'true');
+          document.querySelectorAll('.diagram-panel').forEach(p => {
+            p.hidden = p.dataset.module !== tab.dataset.tab;
+          });
+        });
+      });
+
+      document.querySelectorAll('.flow-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.flow-tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+          tab.setAttribute('aria-selected', 'true');
+          document.querySelectorAll('.flow-panel').forEach(p => {
+            p.hidden = p.dataset.module !== tab.dataset.tab;
+          });
+        });
+      });
+
+      // Draw diagrams
+      drawUseCase('attendance');
+      drawUseCase('timeline');
+      drawUseCase('payroll');
+      drawFlow('overviewFlow');
+      drawFlow('attendanceFlow');
+      drawFlow('timelineFlow');
+      drawFlow('payrollFlow');
+
+      // Mobile menu toggle
+      const menuButton = document.getElementById('menuButton');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+
+      if (menuButton && sidebar && overlay) {
+        menuButton.addEventListener('click', () => {
+          sidebar.classList.toggle('show');
+          overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('show');
+          overlay.classList.remove('show');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
