@@ -2628,78 +2628,89 @@
             {
               id: 'a2',
               x: 590,
-              y: 213,
+              y: 176,
               w: 280,
-              h: 66,
+              h: 76,
               type: 'card',
-              label: ['Pilih tanggal & jam kerja'],
-              sub: 'Cek jadwal aktif',
-              desc: 'Sistem menampilkan jadwal kerja dan shift yang berlaku untuk pengguna.'
+              label: ['Pilih masuk / pulang'],
+              sub: 'Sesuai jadwal kerja',
+              desc: 'Sistem memastikan pengguna memilih check-in atau check-out sesuai status hari itu dan jadwal/shift.'
             },
             {
               id: 'a3',
               x: 590,
-              y: 368,
+              y: 293,
               w: 280,
-              h: 66,
-              type: 'decision',
-              label: ['Waktu sesuai jadwal?'],
-              sub: '',
-              desc: 'Sistem memeriksa apakah waktu absensi sesuai dengan jadwal kerja yang berlaku.'
+              h: 86,
+              type: 'highlight',
+              label: ['Selfie kamera langsung'],
+              sub: 'Ambil GPS + jam server',
+              desc: 'Browser meminta izin kamera dan lokasi. Server menyimpan waktu dan data yang diperlukan serta menghasilkan watermark.'
             },
             {
               id: 'a4',
               x: 590,
-              y: 513,
-              w: 280,
-              h: 66,
+              y: 445,
+              w: 212,
+              h: 128,
               type: 'decision',
-              label: ['Lokasi dalam radius?'],
-              sub: 'Cek GPS & radius',
-              desc: 'Sistem memvalidasi koordinat GPS pengguna terhadap radius yang diizinkan.'
+              label: ['Data absensi', 'valid?'],
+              sub: 'lokasi, jadwal, duplikasi',
+              desc: 'Server memeriksa lokasi dan akurasinya, foto, status absensi, jadwal, serta potensi duplikasi.'
             },
             {
               id: 'a5',
-              x: 230,
-              y: 513,
-              w: 230,
-              h: 66,
-              type: 'flow-node',
-              label: ['Ambil foto selfie'],
-              sub: 'Kamera browser',
-              desc: 'Pengguna mengambil foto selfie melalui kamera perangkat.'
+              x: 255,
+              y: 596,
+              w: 268,
+              h: 83,
+              type: 'card',
+              label: ['Belum dapat dicatat'],
+              sub: 'Tampilkan alasan kegagalan',
+              desc: 'Jika validasi gagal, jangan langsung menandai alpha. Tampilkan alasan yang jelas dan bantu pengguna melanjutkan.'
             },
             {
               id: 'a6',
-              x: 230,
-              y: 658,
-              w: 230,
-              h: 66,
-              type: 'flow-node',
-              label: ['Rekam data kehadiran'],
-              sub: 'Timestamp + GPS + Foto',
-              desc: 'Sistem menyimpan timestamp server, koordinat GPS, dan foto sebagai bukti kehadiran.'
+              x: 255,
+              y: 728,
+              w: 268,
+              h: 76,
+              type: 'card',
+              label: ['Ulangi / ajukan koreksi'],
+              sub: 'Diperiksa HR',
+              desc: 'Pengguna bisa mengulangi selfie atau mengirim pengajuan koreksi apabila GPS, kamera atau jadwal bermasalah.'
             },
             {
               id: 'a7',
-              x: 590,
-              y: 658,
-              w: 280,
-              h: 66,
+              x: 925,
+              y: 596,
+              w: 268,
+              h: 83,
               type: 'highlight',
-              label: ['Tampilkan bukti hadir'],
-              sub: 'Selfie + watermark',
-              desc: 'Sistem menampilkan bukti kehadiran dengan watermark waktu dan lokasi.'
+              label: ['Simpan absensi'],
+              sub: 'Rekam bukti & status',
+              desc: 'Data absensi diterima, foto disimpan privat, dan status kehadiran diperbarui secara atomik di database.'
+            },
+            {
+              id: 'a8',
+              x: 925,
+              y: 728,
+              w: 268,
+              h: 76,
+              type: 'start',
+              label: ['Bukti tersimpan'],
+              sub: 'Lihat riwayat sendiri',
+              desc: 'Pengguna melihat konfirmasi dan riwayat kehadiran, termasuk waktu masuk/pulang dan status.'
             }
           ],
           edges: [
-            { d: 'M590 129 L590 167' },
-            { d: 'M590 279 L590 322' },
-            { d: 'M590 434 L590 467' },
-            { d: 'M590 579 L590 611' },
-            { d: 'M590 579 L380 579 L380 546' },
-            { d: 'M380 579 L380 612' },
-            { d: 'M460 658 L590 658' }
+            { d: 'M590 97 L590 137' },
+            { d: 'M590 215 L590 250' },
+            { d: 'M590 337 L590 381' },
+            { d: 'M485 445 L255 445 L255 554', label: 'Tidak valid', lx: 347, ly: 428 },
+            { d: 'M695 445 L925 445 L925 554', label: 'Valid', lx: 795, ly: 429 },
+            { d: 'M255 638 L255 690' },
+            { d: 'M925 638 L925 690' }
           ]
         },
         timelineFlow: {
@@ -2708,226 +2719,340 @@
             {
               id: 't1',
               x: 590,
-              y: 63,
-              w: 280,
-              h: 66,
+              y: 65,
+              w: 320,
+              h: 76,
               type: 'start',
-              label: ['Senior buat target bulanan'],
-              sub: 'Milestone + deadline',
-              desc: 'Senior membuat target kerja bulanan dengan milestone dan tenggat yang jelas.'
+              label: ['Senior menetapkan target'],
+              sub: 'Bulanan, milestone, deadline',
+              desc: 'Senior membuat target bulanan, milestone, tenggat, penanggung jawab dan kriteria keberhasilan.'
             },
             {
               id: 't2',
               x: 590,
-              y: 213,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Pecah ke rencana mingguan'],
-              sub: 'Junior / Magang',
-              desc: 'Pelaksana memecah target bulanan menjadi rencana mingguan yang lebih detail.'
+              y: 183,
+              w: 320,
+              h: 80,
+              type: 'card',
+              label: ['Rencana mingguan'],
+              sub: 'Disusun junior / magang',
+              desc: 'Pelaksana membuat rencana mingguan yang diturunkan dari target bulan berjalan.'
             },
             {
               id: 't3',
               x: 590,
-              y: 368,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Buat task harian'],
-              sub: 'Tugas spesifik per hari',
-              desc: 'Pelaksana menyusun tugas harian untuk mencapai rencana mingguan.'
+              y: 300,
+              w: 320,
+              h: 82,
+              type: 'card',
+              label: ['Task & log harian'],
+              sub: 'Checklist + evidence',
+              desc: 'Pelaksana menjalankan tugas, mengisi logbook dan melampirkan foto, dokumen, catatan atau tautan hasil.'
             },
             {
               id: 't4',
               x: 590,
-              y: 513,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Kerjakan & upload evidence'],
-              sub: 'Bukti pekerjaan',
-              desc: 'Pelaksana menyelesaikan tugas dan mengunggah bukti hasil kerja.'
+              y: 410,
+              w: 320,
+              h: 80,
+              type: 'highlight',
+              label: ['Ajukan penyelesaian'],
+              sub: 'Status: menunggu review',
+              desc: 'Tugas yang ditandai selesai berpindah ke antrian review senior, belum menghitung progress final.'
             },
             {
               id: 't5',
               x: 590,
-              y: 658,
-              w: 280,
-              h: 66,
+              y: 548,
+              w: 210,
+              h: 124,
               type: 'decision',
-              label: ['Ajukan ke Senior?'],
-              sub: '',
-              desc: 'Pelaksana mengajukan tugas yang sudah diceklist untuk diverifikasi senior.'
+              label: ['Disetujui', 'senior?'],
+              sub: 'cek kualitas & bukti',
+              desc: 'Senior mengevaluasi kesesuaian evidence dan hasil kerja dengan target serta bisa mengembalikan tugas.'
+            },
+            {
+              id: 't6',
+              x: 253,
+              y: 712,
+              w: 275,
+              h: 90,
+              type: 'card',
+              label: ['Revisi & kirim ulang'],
+              sub: 'Catatan senior tersimpan',
+              desc: 'Jika ditolak, pelaksana menerima komentar revisi, memperbaiki task, lalu mengirim ulang.'
+            },
+            {
+              id: 't7',
+              x: 926,
+              y: 712,
+              w: 275,
+              h: 90,
+              type: 'start',
+              label: ['Progress terverifikasi'],
+              sub: 'Evaluasi & laporan bulanan',
+              desc: 'Tugas yang disetujui berkontribusi pada progres resmi, laporan kegiatan, dan penilaian perkembangan.'
             }
           ],
           edges: [
-            { d: 'M590 129 L590 167' },
-            { d: 'M590 279 L590 322' },
-            { d: 'M590 434 L590 467' },
-            { d: 'M590 579 L590 611' }
+            { d: 'M590 104 L590 140' },
+            { d: 'M590 224 L590 257' },
+            { d: 'M590 341 L590 370' },
+            { d: 'M590 451 L590 486' },
+            { d: 'M485 548 L253 548 L253 668', label: 'Revisi', lx: 347, ly: 531 },
+            { d: 'M695 548 L926 548 L926 668', label: 'Disetujui', lx: 794, ly: 531 }
           ]
         },
         payrollFlow: {
-          height: 825,
+          height: 1015,
           nodes: [
             {
               id: 'p1',
               x: 590,
-              y: 63,
-              w: 280,
-              h: 66,
+              y: 67,
+              w: 312,
+              h: 76,
               type: 'start',
-              label: ['HR closing absensi'],
-              sub: 'Validasi & kunci data',
-              desc: 'HR menyelesaikan semua koreksi dan mengunci data absensi periode berjalan.'
+              label: ['Akhir periode payroll'],
+              sub: 'Tanggal tutup ditentukan',
+              desc: 'HR/Payroll menetapkan periode pemrosesan sesuai kalender dan kebijakan perusahaan.'
             },
             {
               id: 'p2',
               x: 590,
-              y: 213,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Generate payroll'],
-              sub: 'Hitung komponen gaji',
-              desc: 'Sistem menghitung gaji berdasarkan data absensi valid dan komponen yang disahkan.'
+              y: 180,
+              w: 312,
+              h: 78,
+              type: 'card',
+              label: ['HR validasi data absensi'],
+              sub: 'Izin, cuti, sakit & alpha',
+              desc: 'HR menyelesaikan validasi, keberatan, dan koreksi absensi agar status hadir atau alpha akurat.'
             },
             {
               id: 'p3',
               x: 590,
-              y: 368,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Payroll review & approve'],
-              sub: 'Tim Payroll',
-              desc: 'Tim Payroll meninjau hasil perhitungan dan memberikan persetujuan.'
+              y: 318,
+              w: 218,
+              h: 130,
+              type: 'decision',
+              label: ['Data absensi', 'final?'],
+              sub: 'Tidak ada koreksi tertunda',
+              desc: 'Jika koreksi penting masih tertunda, payroll tidak boleh menggunakan data tersebut sebagai dasar final.'
             },
             {
               id: 'p4',
-              x: 590,
-              y: 513,
-              w: 280,
-              h: 66,
-              type: 'flow-node',
-              label: ['Export Excel multi-sheet'],
-              sub: '.xlsx 4 sheet',
-              desc: 'Tim Payroll mengekspor hasil payroll ke file Excel dengan beberapa lembar kerja.'
+              x: 248,
+              y: 469,
+              w: 278,
+              h: 85,
+              type: 'card',
+              label: ['Selesaikan koreksi'],
+              sub: 'HR verifikasi ulang',
+              desc: 'HR memeriksa bukti, alasan, jadwal, dan menyetujui atau menolak koreksi, lalu memperbarui data absensi.'
             },
             {
               id: 'p5',
-              x: 590,
-              y: 658,
-              w: 280,
-              h: 66,
+              x: 909,
+              y: 469,
+              w: 278,
+              h: 85,
               type: 'highlight',
-              label: ['Catat pembayaran'],
-              sub: 'Status Paid',
-              desc: 'Setelah pembayaran dilakukan, tim Payroll menandai status dan menyimpan audit trail.'
+              label: ['Lock rekap kehadiran'],
+              sub: 'Snapshot payroll period',
+              desc: 'Buat snapshot absensi yang tidak dapat berubah tanpa prosedur koreksi resmi.'
+            },
+            {
+              id: 'p6',
+              x: 909,
+              y: 586,
+              w: 278,
+              h: 85,
+              type: 'card',
+              label: ['Hitung gaji / uang saku'],
+              sub: 'Komponen + aturan yang sah',
+              desc: 'Sistem menjalankan perhitungan berdasarkan data payroll dan kebijakan perusahaan; uang saku magang diproses terpisah.'
+            },
+            {
+              id: 'p7',
+              x: 909,
+              y: 701,
+              w: 278,
+              h: 85,
+              type: 'card',
+              label: ['Review & approval Payroll'],
+              sub: 'Periksa rincian & total',
+              desc: 'Tim Payroll meninjau hasil, membandingkan perubahan, meminta perbaikan jika perlu, dan memberikan otorisasi final.'
+            },
+            {
+              id: 'p8',
+              x: 909,
+              y: 811,
+              w: 278,
+              h: 78,
+              type: 'highlight',
+              label: ['Export Excel & slip gaji'],
+              sub: 'File .xlsx multi-sheet',
+              desc: 'Setelah disahkan, ekspor Excel ringkasan, detail absensi, rincian komponen, dan per departemen. Slip disediakan sesuai akses.'
+            },
+            {
+              id: 'p9',
+              x: 909,
+              y: 932,
+              w: 278,
+              h: 76,
+              type: 'start',
+              label: ['Catat paid & arsipkan'],
+              sub: 'Audit trail + periode terkunci',
+              desc: 'Tim Payroll merekam status pembayaran, tanggal, referensi pembayaran, dan jejak proses tanpa menghilangkan riwayat.'
             }
           ],
           edges: [
-            { d: 'M590 129 L590 167' },
-            { d: 'M590 279 L590 322' },
-            { d: 'M590 434 L590 467' },
-            { d: 'M590 579 L590 611' }
+            { d: 'M590 105 L590 141' },
+            { d: 'M590 220 L590 253' },
+            { d: 'M480 318 L248 318 L248 425', label: 'Belum', lx: 338, ly: 301 },
+            { d: 'M699 318 L909 318 L909 425', label: 'Sudah', lx: 796, ly: 301 },
+            { d: 'M909 512 L909 543' },
+            { d: 'M909 629 L909 658' },
+            { d: 'M909 744 L909 771' },
+            { d: 'M909 849 L909 894' }
           ]
         }
       };
 
-      function drawFlow(key) {
+      function flowGraph(key) {
         const d = flows[key];
-        const parent = document.getElementById('flow-' + key);
         const svg = el('svg', {
           class: 'diagram',
-          viewBox: '0 0 1220 ' + d.height,
+          viewBox: `0 0 1180 ${d.height}`,
           role: 'img',
           'aria-label': 'Flowchart ' + key
-        }, parent);
+        }, document.getElementById('flow-' + key));
+
+        const defs = el('defs', {}, svg);
+        const marker = el('marker', {
+          id: 'arrowhead',
+          viewBox: '0 0 10 10',
+          refX: 9,
+          refY: 5,
+          markerWidth: 5.5,
+          markerHeight: 5.5,
+          orient: 'auto-start-reverse'
+        }, defs);
+        el('path', { d: 'M0 0 L10 5 L0 10 z', fill: '#9cadd0' }, marker);
+
+        d.edges.forEach(edge => {
+          el('path', { d: edge.d, class: 'edge-path' }, svg);
+          if (edge.label) {
+            el('rect', {
+              x: edge.lx - 39,
+              y: edge.ly - 14,
+              width: 78,
+              height: 24,
+              rx: 7,
+              fill: '#fff',
+              stroke: '#e5eaf2'
+            }, svg);
+            textSvg(svg, edge.lx, edge.ly + 3, edge.label, 'arrow-label');
+          }
+        });
 
         d.nodes.forEach(n => {
           const g = el('g', { 'data-node': n.id, tabindex: 0, role: 'button', 'aria-label': n.label.join(' ') }, svg);
-          let shapeClass = 'flow-node';
-          if (n.type === 'start') {
-            shapeClass = 'flow-start';
-          } else if (n.type === 'highlight') {
-            shapeClass = 'flow-highlight';
-          } else if (n.type === 'decision') {
-            shapeClass = 'decision';
+          if (n.type === 'decision') {
+            const w = n.w;
+            const h = n.h;
+            el('polygon', {
+              points: `${n.x},${n.y - h / 2} ${n.x + w / 2},${n.y} ${n.x},${n.y + h / 2} ${n.x - w / 2},${n.y}`,
+              class: 'decision node-shape'
+            }, g);
+          } else {
+            const cl = n.type === 'start' ? 'flow-start' : n.type === 'highlight' ? 'flow-highlight' : 'flow-node';
+            el('rect', {
+              x: n.x - n.w / 2,
+              y: n.y - n.h / 2,
+              width: n.w,
+              height: n.h,
+              rx: n.type === 'start' ? 30 : 13,
+              class: cl + ' node-shape'
+            }, g);
           }
-          el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 12, class: shapeClass + ' node-shape' }, g);
-          el('text', { x: n.x + n.w / 2, y: n.y + 28, 'text-anchor': 'middle', class: 'flow-title' }, g).textContent = n.label[0];
-          if (n.label[1]) {
-            el('text', { x: n.x + n.w / 2, y: n.y + 46, 'text-anchor': 'middle', class: 'flow-sub' }, g).textContent = n.label[1];
+          const titleBase = n.sub ? n.y - 5 : n.y + 3;
+          lineText(g, n.label, n.x, titleBase - (n.label.length - 1) * 1.5, 'flow-title', 18);
+          if (n.sub) {
+            textSvg(g, n.x, n.y + (n.type === 'decision' ? 37 : 25), n.sub, 'flow-sub');
           }
-          el('text', { x: n.x + n.w / 2, y: n.y + n.h - 12, 'text-anchor': 'middle', class: 'flow-sub' }, g).textContent = n.sub;
-
-          const showDetail = () => {
-            svg.querySelectorAll('[data-node]').forEach(node => node.classList.remove('selected'));
+          const choose = () => {
+            svg.querySelectorAll('[data-node]').forEach(x => x.classList.remove('selected'));
             g.classList.add('selected');
             setDetail('flowDetail', n.label.join(' '), n.desc);
           };
-          g.addEventListener('click', showDetail);
+          g.addEventListener('click', choose);
           g.addEventListener('keydown', e => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              showDetail();
+              choose();
             }
           });
         });
+      }
 
-        d.edges.forEach(e => {
-          el('path', { d: e.d, class: 'edge-path' }, svg);
+      Object.keys(uc).forEach(drawUseCase);
+      Object.keys(flows).forEach(flowGraph);
+
+      function installTabs(tabClass, panelClass, initial) {
+        document.querySelectorAll('.' + tabClass).forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.tab;
+            document.querySelectorAll('.' + tabClass).forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+            document.querySelectorAll('.' + panelClass).forEach(p => p.hidden = p.dataset.module !== key);
+            if (tabClass === 'uc-tab') {
+              setDetail('ucDetail', 'Modul ' + (uc[key]?.title || key), 'Klik oval pada diagram untuk membaca fungsi serta tanggung jawab aktornya.');
+            } else {
+              setDetail('flowDetail', 'Flowchart: ' + btn.textContent, 'Klik kotak atau keputusan pada diagram untuk melihat logika proses.');
+            }
+          });
         });
       }
 
-      // Initialize tabs
-      document.querySelectorAll('.uc-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.uc-tab').forEach(t => t.setAttribute('aria-selected', 'false'));
-          tab.setAttribute('aria-selected', 'true');
-          document.querySelectorAll('.diagram-panel').forEach(p => {
-            p.hidden = p.dataset.module !== tab.dataset.tab;
-          });
-        });
-      });
+      installTabs('uc-tab', 'diagram-panel');
+      installTabs('flow-tab', 'flow-panel');
 
-      document.querySelectorAll('.flow-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.flow-tab').forEach(t => t.setAttribute('aria-selected', 'false'));
-          tab.setAttribute('aria-selected', 'true');
-          document.querySelectorAll('.flow-panel').forEach(p => {
-            p.hidden = p.dataset.module !== tab.dataset.tab;
-          });
-        });
-      });
-
-      // Draw diagrams
-      drawUseCase('attendance');
-      drawUseCase('timeline');
-      drawUseCase('payroll');
-      drawFlow('overviewFlow');
-      drawFlow('attendanceFlow');
-      drawFlow('timelineFlow');
-      drawFlow('payrollFlow');
-
-      // Mobile menu toggle
-      const menuButton = document.getElementById('menuButton');
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('overlay');
+      const closeNav = () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+      };
 
-      if (menuButton && sidebar && overlay) {
-        menuButton.addEventListener('click', () => {
-          sidebar.classList.toggle('show');
-          overlay.classList.toggle('show');
-        });
+      document.getElementById('menuButton').addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      });
 
-        overlay.addEventListener('click', () => {
-          sidebar.classList.remove('show');
-          overlay.classList.remove('show');
-        });
+      overlay.addEventListener('click', closeNav);
+      document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', closeNav));
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(entries => {
+          const v = entries.filter(x => x.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (v) {
+            document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + v.target.id));
+          }
+        }, { rootMargin: '-22% 0px -65% 0px', threshold: 0 });
+        document.querySelectorAll('.content section[id]').forEach(s => io.observe(s));
       }
+
+      // Print all tabs, not only the currently selected diagram.
+      window.addEventListener('beforeprint', () => {
+        document.querySelectorAll('.diagram-panel,.flow-panel').forEach(p => p.hidden = false);
+      });
+
+      window.addEventListener('afterprint', () => {
+        const ucKey = document.querySelector('.uc-tab[aria-selected="true"]').dataset.tab;
+        const flowKey = document.querySelector('.flow-tab[aria-selected="true"]').dataset.tab;
+        document.querySelectorAll('.diagram-panel').forEach(p => p.hidden = p.dataset.module !== ucKey);
+        document.querySelectorAll('.flow-panel').forEach(p => p.hidden = p.dataset.module !== flowKey);
+      });
     })();
   </script>
 </body>
