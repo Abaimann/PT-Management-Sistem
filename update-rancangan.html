@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1221" />
+  <meta name="description" content="Rancangan ekspansi DualStack v2.0 menuju ERP General modular: absensi, timeline, payroll, aset, purchasing, GL, dan ERD." />
+  <title>DualStack — Blueprint Ekspansi ERP General & ERD v2.0</title>
+  <style>
+    :root {
+      --ink: #162037;
+      --muted: #64748b;
+      --light: #f4f7fc;
+      --paper: #fff;
+      --line: #e5eaf2;
+      --blue: #465de8;
+      --blue-soft: #e9edff;
+      --mint: #0a9e85;
+      --mint-soft: #e6f8f2;
+      --amber: #d48a20;
+      --amber-soft: #fff5df;
+      --red: #d85262;
+      --red-soft: #fff0f1;
+      --shadow: 0 20px 65px rgba(29, 49, 96, .07);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--light);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 252px;
+      background: #0c1528;
+      color: #dde5f5;
+      padding: 26px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 30;
+      overflow-y: auto;
+      box-shadow: 8px 0 35px rgba(12, 21, 40, .08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 0 11px;
+      margin-bottom: 33px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #8e9bff, #4a5ce9);
+      font-weight: 900;
+      font-size: 18px;
+      color: white;
+      box-shadow: 0 6px 18px #4b5ee849;
+    }
+
+    .brand strong {
+      display: block;
+      color: white;
+      font-weight: 750;
+      font-size: 16px;
+      letter-spacing: -.5px;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 10px;
+      color: #8ea0bd;
+      letter-spacing: 1.1px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .nav-label {
+      font-weight: 750;
+      font-size: 10px;
+      letter-spacing: 1.3px;
+      color: #6f82a4;
+      padding: 0 14px;
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+    }
+
+    .nav-link {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      padding: 12px 13px;
+      color: #aebbd2;
+      font-weight: 550;
+      font-size: 12.8px;
+      transition: .2s;
+    }
+
+    .nav-link svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 17px;
+      stroke-width: 1.9;
+    }
+
+    .nav-link:hover {
+      background: #1b2942;
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: #29385d;
+      color: #fff;
+      box-shadow: inset 3px 0 #8f9eff;
+    }
+
+    .nav-end {
+      margin-top: auto;
+      padding: 14px 10px 5px;
+    }
+
+    .nav-note {
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: #94a5c0;
+      border: 1px solid #25354f;
+      background: #111f36;
+      padding: 13px;
+      border-radius: 12px;
+    }
+
+    .nav-note b {
+      color: #edf2ff;
+    }
+
+    .main {
+      margin-left: 252px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .topbar {
+      height: 74px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(250, 252, 255, .94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 39px;
+      gap: 10px;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      color: #8490a3;
+    }
+
+    .crumb b {
+      color: #243047;
+      font-weight: 650;
+    }
+
+    .slash {
+      color: #c3cad6;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      border: 1px solid #dfe5ef;
+      background: #fff;
+      color: #526079;
+      font-size: 11px;
+      padding: 7px 10px;
+      border-radius: 40px;
+      font-weight: 650;
+    }
+
+    .pill i {
+      display: inline-block;
+      border-radius: 50%;
+      width: 7px;
+      height: 7px;
+      background: var(--mint);
+    }
+
+    .btn {
+      border: 1px solid #dce3f0;
+      background: white;
+      color: #35425d;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: .18s;
+    }
+
+    .btn:hover {
+      border-color: #9aaaf8;
+      color: #4353d8;
+      transform: translateY(-1px);
+    }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #354ace;
+      color: white;
+    }
+
+    .menu-toggle {
+      display: none;
+    }
+
+    .content {
+      max-width: 1515px;
+      margin: 0 auto;
+      padding: 30px 40px 95px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border-radius: 24px;
+      background: radial-gradient(circle at 87% 19%, #263e7c 0%, transparent 27%),
+        linear-gradient(118deg, #0c1630, #111f47 62%, #162959);
+      padding: 44px 48px 38px;
+      color: #fff;
+      box-shadow: 0 17px 45px #1523511e;
+    }
+
+    .hero:before {
+      content: "";
+      position: absolute;
+      right: -65px;
+      top: -140px;
+      width: 440px;
+      height: 440px;
+      border: 1px solid #6b84c52d;
+      border-radius: 50%;
+      z-index: -1;
+      box-shadow: 0 0 0 65px #6b84c50b,
+        0 0 0 140px #6b84c50c;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      right: 70px;
+      bottom: -115px;
+      width: 230px;
+      height: 230px;
+      background: #6069ed26;
+      border-radius: 50%;
+      filter: blur(50px);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #a7befd;
+    }
+
+    .eyebrow .dot {
+      height: 7px;
+      width: 7px;
+      border-radius: 50%;
+      background: #79d0b9;
+    }
+
+    .hero h1 {
+      max-width: 790px;
+      font-size: clamp(27px, 3.1vw, 42px);
+      font-weight: 800;
+      letter-spacing: -1.65px;
+      line-height: 1.17;
+      margin: 15px 0 15px;
+    }
+
+    .hero h1 span {
+      color: #9aaafd;
+    }
+
+    .hero p {
+      max-width: 690px;
+      font-size: 14px;
+      color: #acb9d6;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin-top: 34px;
+      border-top: 1px solid #ffffff24;
+      padding-top: 24px;
+    }
+
+    .hero-stat {
+      padding: 0 30px;
+      border-right: 1px solid #ffffff24;
+    }
+
+    .hero-stat:first-child {
+      padding-left: 0;
+    }
+
+    .hero-stat:last-child {
+      border: 0;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 25px;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+    }
+
+    .hero-stat span {
+      display: block;
+      color: #9baacc;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .section {
+      margin-top: 44px;
+      scroll-margin-top: 93px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      margin-bottom: 19px;
+    }
+
+    .section-heading .kicker {
+      font-weight: 800;
+      color: #5769eb;
+      letter-spacing: 1.15px;
+      font-size: 10px;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.75px;
+      line-height: 1.2;
+    }
+
+    .section-heading p {
+      max-width: 730px;
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .section-chip {
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: #eef1fb;
+      color: #566588;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .module-card {
+      padding: 24px 23px;
+      min-height: 229px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      background: var(--blue-soft);
+      color: #4c60e9;
+    }
+
+    .icon-box svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .module-card:nth-child(2) .icon-box {
+      background: var(--mint-soft);
+      color: var(--mint);
+    }
+
+    .module-card:nth-child(3) .icon-box {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .module-card h3 {
+      margin: 17px 0 8px;
+      letter-spacing: -.35px;
+      font-size: 16px;
+    }
+
+    .module-card p {
+      font-size: 12.7px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .module-card .mini {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #5362be;
+      font-weight: 800;
+    }
+
+    .story {
+      margin-top: 16px;
+      padding: 19px 22px;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      justify-content: space-between;
+    }
+
+    .story p {
+      color: #62708c;
+      margin: 3px 0 0;
+      font-size: 12.5px;
+    }
+
+    .story strong {
+      font-size: 13.5px;
+    }
+
+    .story .small-tag {
+      background: #ecf9f3;
+      border: 1px solid #c9ecdf;
+      color: #118c72;
+      border-radius: 7px;
+      padding: 7px 10px;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .diagram-card {
+      padding: 19px;
+    }
+
+    .diagram-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f0f3f9;
+      border: 1px solid #e5eaf3;
+      padding: 4px;
+      border-radius: 11px;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 750;
+      color: #7b879b;
+      font-size: 12px;
+      transition: .18s;
+    }
+
+    .tab:hover {
+      color: #394cf0;
+    }
+
+    .tab[aria-selected="true"] {
+      background: white;
+      color: #3d51d6;
+      box-shadow: 0 3px 10px #26395816;
+    }
+
+    .diagram-hint {
+      color: #8090a9;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .diagram-hint svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .canvas {
+      overflow-x: auto;
+      overflow-y: hidden;
+      border: 1px solid #e7ecf5;
+      border-radius: 13px;
+      background: radial-gradient(circle at 1px 1px, #e9edf6 1px, transparent 1px),
+        #fbfcff;
+      background-size: 22px 22px;
+      padding: 6px;
+    }
+
+    .canvas svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 700px;
+    }
+
+    .canvas flow svg {
+      height: auto;
+    }
+
+    .detail-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 15px 16px;
+      border: 1px solid #e7ebf4;
+      background: #f9faff;
+      border-radius: 11px;
+      margin-top: 14px;
+      min-height: 74px;
+    }
+
+    .detail-symbol {
+      background: #e7ebff;
+      color: #465cdb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 850;
+      width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      flex-shrink: 0;
+    }
+
+    .detail-strip strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .detail-strip p {
+      margin: 3px 0 0;
+      color: #67748b;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .diagram-note {
+      margin-top: 12px;
+      color: #78869c;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .flow-caption {
+      margin-top: 13px;
+      font-size: 12px;
+      color: #697790;
+      border-left: 3px solid #a0aefe;
+      padding-left: 12px;
+      line-height: 1.6;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .role-card {
+      padding: 18px 15px;
+      min-height: 165px;
+    }
+
+    .role-card .tag {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #eff1fc;
+      color: #5466dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .role-card h3 {
+      font-size: 13px;
+      letter-spacing: -.2px;
+      margin: 13px 0 6px;
+    }
+
+    .role-card p {
+      font-size: 11.7px;
+      line-height: 1.6;
+      color: #728097;
+      margin: 0;
+    }
+
+    .matrix-wrap {
+      overflow-x: auto;
+    }
+
+    .matrix {
+      border-collapse: collapse;
+      min-width: 790px;
+      width: 100%;
+      font-size: 11.5px;
+    }
+
+    .matrix th,
+    .matrix td {
+      text-align: center;
+      border-bottom: 1px solid #e9edf4;
+      padding: 12px 9px;
+    }
+
+    .matrix th:first-child,
+    .matrix td:first-child {
+      text-align: left;
+    }
+
+    .matrix th {
+      font-size: 11px;
+      color: #71819c;
+      font-weight: 800;
+      background: #f8faff;
+    }
+
+    .matrix tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .matrix td:first-child {
+      font-weight: 650;
+      color: #344158;
+    }
+
+    .yes {
+      color: #079477;
+      font-weight: 850;
+      font-size: 14px;
+    }
+
+    .limited {
+      font-size: 12px;
+      font-weight: 850;
+      color: #dc9925;
+    }
+
+    .no {
+      font-size: 13px;
+      color: #c0c8d5;
+    }
+
+    .matrix-intro {
+      padding: 15px 19px;
+      color: #6d7b93;
+      font-size: 12px;
+    }
+
+    .matrix-legend {
+      padding: 11px 19px 17px;
+      font-size: 11px;
+      color: #8995a8;
+      display: flex;
+      gap: 19px;
+      flex-wrap: wrap;
+    }
+
+    .rules {
+      counter-reset: steps;
+    }
+
+    .rule {
+      display: flex;
+      gap: 13px;
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .rule:last-child {
+      border-bottom: 0;
+    }
+
+    .rule-icon {
+      color: #4f61dc;
+      background: #ecf0ff;
+      border-radius: 9px;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .rule strong {
+      font-size: 12.7px;
+    }
+
+    .rule p {
+      font-size: 12px;
+      color: #697891;
+      line-height: 1.65;
+      margin: 3px 0 0;
+    }
+
+    .data-pill {
+      display: inline-flex;
+      background: #eef1fa;
+      color: #596784;
+      border-radius: 7px;
+      padding: 5px 9px;
+      margin: 5px 6px 0 0;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .step-card {
+      padding: 21px 19px;
+    }
+
+    .step-badge {
+      font-weight: 850;
+      color: #5668e7;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .step-card h3 {
+      margin: 10px 0 7px;
+      font-size: 14px;
+    }
+
+    .step-card p {
+      margin: 0;
+      color: #718099;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .step-card ul {
+      font-size: 11.7px;
+      color: #5d6b84;
+      padding-left: 18px;
+      margin: 12px 0 0;
+      line-height: 1.9;
+    }
+
+    .footer {
+      padding: 28px 0 0;
+      margin-top: 47px;
+      border-top: 1px solid #dfe5f0;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: #8895aa;
+      font-size: 11px;
+    }
+
+    .footer b {
+      color: #5564a6;
+    }
+
+    svg.diagram [data-node] {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .diagram [data-node]:hover .node-shape {
+      filter: drop-shadow(0 6px 8px #395bcc30);
+      stroke-width: 2.8 !important;
+    }
+
+    .diagram [data-node].selected .node-shape {
+      stroke: #465de8 !important;
+      stroke-width: 3.3 !important;
+      filter: drop-shadow(0 7px 11px #465de835);
+    }
+
+    .diagram [data-node]:focus-visible .node-shape {
+      stroke: #465de8 !important;
+      stroke-width: 4 !important;
+    }
+
+    .diagram .connection {
+      stroke: #9eaed0;
+      stroke-width: 1.8;
+      fill: none;
+    }
+
+    .diagram .uc-ellipse {
+      fill: #fff;
+      stroke: #a9b7d6;
+      stroke-width: 1.7;
+    }
+
+    .diagram .actor-art {
+      stroke: #526785;
+      fill: none;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .diagram .uml-label {
+      font-weight: 700;
+      fill: #25334d;
+      font-size: 13px;
+    }
+
+    .diagram .uml-sub {
+      fill: #7b8aa1;
+      font-size: 11px;
+    }
+
+    .diagram .module-head {
+      font-weight: 850;
+      fill: #5f71a0;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .diagram .end-node {
+      fill: #ebefff;
+      stroke: #bac7ff;
+      stroke-width: 1.7;
+    }
+
+    .diagram .decision {
+      fill: #fff8e8;
+      stroke: #e7ad58;
+      stroke-width: 2;
+    }
+
+    .diagram .flow-node {
+      fill: white;
+      stroke: #c5d1e6;
+      stroke-width: 1.6;
+    }
+
+    .diagram .flow-start {
+      fill: #e5f6ee;
+      stroke: #6cc5a0;
+      stroke-width: 1.7;
+    }
+
+    .diagram .flow-highlight {
+      fill: #e9edff;
+      stroke: #889bfa;
+      stroke-width: 1.7;
+    }
+
+    .diagram .flow-title {
+      fill: #24334e;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .diagram .flow-sub {
+      fill: #7788a4;
+      font-size: 11px;
+    }
+
+    .diagram .arrow-label {
+      font-size: 12px;
+      font-weight: 800;
+      fill: #697a9e;
+    }
+
+    .diagram .edge-path {
+      fill: none;
+      stroke: #9cadd0;
+      stroke-width: 2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      marker-end: url(#arrowhead);
+    }
+
+    .alert {
+      padding: 18px 19px;
+      background: #fffbf1;
+      border: 1px solid #f2e3bc;
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .alert svg {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      color: #c99636;
+      margin-top: 2px;
+    }
+
+    .alert strong {
+      font-size: 12.5px;
+      color: #6f5423;
+    }
+
+    .alert p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #8b764f;
+    }
+
+    .mobile-overlay {
+      display: none;
+    }
+
+    .print-header {
+      display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .content {
+        padding: 26px 26px 76px;
+      }
+
+      .topbar {
+        padding: 0 26px;
+      }
+
+      .roles-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-101%);
+        transition: .22s;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .mobile-overlay.show {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: #081227aa;
+        z-index: 29;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .topbar {
+        height: 64px;
+      }
+
+      .hero {
+        padding: 34px 30px;
+      }
+
+      .hero-stat {
+        padding: 0 18px;
+      }
+
+      .cols-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .steps {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .section {
+        margin-top: 35px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .content {
+        padding: 18px 14px 48px;
+      }
+
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .top-actions .pill {
+        display: none;
+      }
+
+      .top-actions .btn span {
+        display: none;
+      }
+
+      .crumb {
+        font-size: 11px;
+      }
+
+      .hero {
+        border-radius: 18px;
+        padding: 30px 23px;
+      }
+
+      .hero h1 {
+        font-size: 29px;
+        letter-spacing: -1.1px;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 21px;
+      }
+
+      .hero-stat {
+        padding: 0;
+        border: 0 !important;
+      }
+
+      .hero-stat strong {
+        font-size: 22px;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+      }
+
+      .section-chip {
+        display: none;
+      }
+
+      .section-heading h2 {
+        font-size: 22px;
+      }
+
+      .cols-3,
+      .cols-2,
+      .steps,
+      .roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cols-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .diagram-card {
+        padding: 11px;
+      }
+
+      .diagram-hint {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 9px 6px;
+        font-size: 11px;
+      }
+
+      .story {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .role-card {
+        min-height: 0;
+      }
+
+      .canvas svg {
+        min-width: 685px;
+      }
+
+      .diagram-note {
+        font-size: 10px;
+      }
+    }
+
+    @media print {
+      * {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .sidebar,
+      .topbar,
+      .mobile-overlay,
+      .diagram-hint,
+      .print-hide {
+        display: none !important;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .main {
+        margin: 0;
+      }
+
+      .content {
+        max-width: none;
+        padding: 0 10px;
+      }
+
+      .hero {
+        box-shadow: none;
+      }
+
+      .section {
+        break-inside: avoid;
+        margin-top: 28px;
+      }
+
+      .card,
+      .diagram-card {
+        box-shadow: none;
+      }
+
+      .diagram-panel,
+      .flow-panel {
+        display: block !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 15px;
+      }
+
+      .canvas {
+        overflow: visible;
+      }
+
+      .canvas svg {
+        min-width: 0 !important;
+      }
+
+      .diagram-toolbar .tabs {
+        display: none !important;
+      }
+
+      .diagram-toolbar:after {
+        content: "Semua diagram ditampilkan pada mode cetak";
+        font-size: 10px;
+        color: #69758c;
+      }
+
+      .print-header {
+        display: block;
+        font-size: 10px;
+        margin: 6px 0;
+        color: #64748b;
+      }
+
+      .detail-strip {
+        display: none;
+      }
+
+      .roles-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .module-card {
+        min-height: 0;
+      }
+
+      .flow-panel .flow-caption {
+        display: block;
+      }
+
+      .diagram-panel:not(:first-child):before,
+      .flow-panel:not(:first-child):before {
+        content: attr(data-printtitle);
+        font-size: 15px;
+        font-weight: 800;
+        display: block;
+        margin: 15px 0 10px;
+      }
+
+      .footer {
+        margin-top: 15px;
+      }
+    }
+  
+
+    /* Dokumentasi multi-halaman — ekstensi non-invasif dari style v1.0 */
+    .doc-switcher { margin: -14px 0 14px; padding: 12px 9px 11px; border: 1px solid #293a56; border-radius: 13px; background: #111e34; }
+    .doc-switcher-title { display: flex; align-items: center; gap: 7px; padding: 0 5px; color: #899fc2; letter-spacing: 1.15px; font-size: 10px; font-weight: 850; text-transform: uppercase; margin-bottom: 9px; }
+    .doc-mode-link { display: flex; align-items: center; gap: 8px; padding: 11px 10px; border-radius: 9px; color: #afbfd8; font-size: 11.5px; font-weight: 650; line-height: 1.35; margin: 3px 0; transition: .18s; }
+    .doc-mode-link .mode-number { flex: 0 0 22px; font-size: 10px; font-weight: 850; color: #8799bf; }
+    .doc-mode-link:hover { background: #243453; color: #fff; }
+    .doc-mode-link.active { background: #354679; color: #fff; box-shadow: inset 3px 0 #9aabff; }
+    .doc-mode-link.active .mode-number { color: #c2d1ff; }
+    .page-cta { background: #e9edff; color: #3e51d8; border: 1px solid #c9d1ff; }
+    .page-cta:hover { background: #465de8; color: white; border-color: #465de8; }
+    .page-cta .cta-compact { display: none; }
+    .jump-card { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin-top: 20px; padding: 23px 25px; border-radius: var(--radius); border: 1px solid #c7d2fa; box-shadow: var(--shadow); background: linear-gradient(108deg,#f8faff,#eef1ff); }
+    .jump-card .jump-label { text-transform: uppercase; letter-spacing: .85px; font-size: 10px; font-weight: 850; color: #6473cb; }
+    .jump-card h3 { margin: 5px 0 5px; font-size: 17px; line-height: 1.35; }
+    .jump-card p { font-size: 12px; margin: 0; color: #66738e; max-width: 700px; }
+    .jump-card .btn { flex: 0 0 auto; }
+    .fineprint { font-size: 11.5px; color: #75829a; line-height: 1.7; margin: 12px 0 0; }
+    .token { display: inline-block; border: 1px solid #e2e7f1; border-radius: 7px; background: #f5f7fc; color: #586982; padding: 2px 6px; margin: 2px; font-size: 10.6px; font-weight: 650; white-space: nowrap; }
+    .key-badge { display: inline-block; font-size: 9px; line-height: 1; border-radius: 5px; padding: 4px 5px; margin-right: 4px; font-weight: 850; vertical-align: 1px; }
+    .key-badge.pk { background: #e6eaff; color: #4a5ed4; }
+    .key-badge.fk { background: #e2f6f1; color: #0b947a; }
+    .version-tag { display: inline-flex; align-items:center; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: var(--blue-soft); color: #4c60d0; }
+    .module-card .feature-list { padding-left: 18px; margin: 13px 0 0; font-size: 12px; color: #63718d; line-height: 1.75; }
+    .feature-list li { margin-bottom: 4px; }
+    .engine-card { padding: 19px 20px; min-height: 160px; }
+    .engine-card h3 { font-size: 14px; margin: 9px 0; }
+    .engine-card p { color: var(--muted); margin: 0; font-size: 12px; line-height: 1.7; }
+    .role-expansion { padding: 18px 20px; }
+    .role-expansion h3 { margin: 2px 0 9px; font-size: 14px; }
+    .role-expansion p { font-size: 12px; line-height: 1.7; color: #697891; margin: 0; }
+    .db-toolbar { display: flex; gap: 13px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 14px; }
+    .db-toolbar .tabs { max-width: 100%; }
+    .db-toolbar .tab { padding: 9px 11px; font-size: 11px; }
+    .db-search { flex: 1 1 190px; max-width: 280px; border: 1px solid #dce3f0; background: #fff; color: var(--ink); border-radius: 10px; padding: 10px 13px; outline: none; font: inherit; font-size: 12px; }
+    .db-search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px #465de81c; }
+    .db-table-wrap { overflow: auto; max-height: 640px; border: 1px solid #e8edf5; border-radius: 12px; }
+    .db-table { width: 100%; min-width: 870px; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+    .db-table th { position: sticky; top: 0; z-index: 2; background: #f6f8ff; font-size: 11px; text-align: left; padding: 13px 14px; color: #596987; border-bottom: 1px solid #dfe6f2; }
+    .db-table td { padding: 13px 14px; vertical-align: top; border-bottom: 1px solid #edf0f6; color: #58677e; line-height: 1.8; }
+    .db-table tr:last-child td { border-bottom: 0; }
+    .db-table tbody tr:hover td { background: #f9faff; }
+    .db-table td:first-child { min-width: 180px; color: #2e3d59; }
+    .db-table td:nth-child(2) { min-width: 390px; }
+    .db-table code { background: #f0f3f9; padding: 3px 6px; border-radius: 5px; font-size: 11px; font-weight: 750; }
+    .db-table [hidden] { display: none !important; }
+    .result-count { color: #7d8ba4; font-size: 11.5px; }
+    .legend-row { margin-top: 10px; display: flex; gap: 13px; align-items: center; flex-wrap: wrap; color: #8490a3; font-size: 11px; }
+    .erd-shell { margin-bottom: 18px; }
+    .erd-canvas { padding: 13px; }
+    .erd-svg { min-width: 730px !important; }
+    .erd-svg [data-cluster] { cursor: pointer; outline: none; }
+    .erd-svg [data-cluster]:focus-visible .erd-box { stroke: #485de9; stroke-width: 4; }
+    .erd-svg [data-cluster]:hover .erd-box,.erd-svg [data-cluster].selected .erd-box { stroke: #485de9; stroke-width: 3; filter: drop-shadow(0 6px 11px #465de826); }
+    .erd-svg .erd-box { fill: white; stroke: #cad5eb; stroke-width: 1.8; }
+    .erd-svg .erd-heading { fill: #273855; font-weight: 850; font-size: 15px; }
+    .erd-svg .erd-caption { fill: #7385a0; font-size: 11.5px; }
+    .erd-svg .erd-number { fill: #485de8; font-size: 10.5px; letter-spacing: 1px; font-weight: 800; }
+    .erd-svg .erd-line { fill: none; stroke: #9aabd0; stroke-width: 2; stroke-dasharray: 6 5; }
+    .erd-svg .erd-rel { fill: #647699; font-size: 11px; font-weight: 750; }
+    .policy-alert { background:#f8faff; border-color:#dce3fc; }
+    .policy-alert strong { color:#4156ad; }
+    .policy-alert p { color:#697b9d; }
+    .workflow-visual { margin-top: 15px; display:flex; flex-wrap:wrap; gap: 8px; align-items:center; }
+    .workflow-node { border: 1px solid #dce5f4; padding:8px 11px; border-radius:8px; background: #f8faff; color:#415170; font-size:11px; font-weight:750; }
+    .workflow-arrow { color:#9aaaC8; font-weight:850; }
+    @media (max-width: 1200px) { .page-cta .cta-full { display:none; } .page-cta .cta-compact { display:inline; } }
+    @media (max-width: 620px) {
+      .top-actions .page-cta .cta-compact { display: inline; }
+      .top-actions .page-cta { padding: 8px 9px; font-size: 10.5px; }
+      .top-actions .pill { display: none; }
+      .top-actions > button.btn { padding: 8px 9px; }
+      .top-actions { gap: 5px; }
+      .crumb .slash,.crumb b { display:none; }
+      .jump-card { align-items:flex-start; flex-direction:column; padding:20px; }
+      .jump-card .btn { white-space:normal; }
+      .db-toolbar .db-search { width: 100%; max-width: none; flex: 1 1 100%; }
+      .erd-canvas { padding:6px; }
+    }
+    @media (max-width: 380px) { .crumb > span:first-child { display:none; } .topbar {gap:5px;} }
+    @media print { .doc-switcher,.page-cta,.jump-card,.db-toolbar,.quick-nav-bar,.quick-dock-container { display:none !important; } .db-table-wrap { max-height: none; overflow: visible; } .db-table [hidden] { display:table-row !important; } .db-table { min-width:0; font-size:9px; } .db-table th,.db-table td { padding:6px; } }
+    @view-transition { navigation: auto; }
+
+    /* Modern Glassmorphic Navigation Bar & Floating Dock */
+    .quick-nav-bar {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+      position: sticky;
+      top: 64px;
+      z-index: 19;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .quick-nav-bar-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .quick-nav-bar-label .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      display: inline-block;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .quick-nav-bar-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .quick-nav-bar-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .q-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 13px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .q-btn:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+      color: #0f172a;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .q-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .q-btn-primary {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: #ffffff !important;
+      border-color: #4f46e5;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
+    }
+
+    .q-btn-primary:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+      border-color: #4338ca;
+    }
+
+    .q-btn-indigo {
+      background: #eef2ff;
+      color: #4338ca;
+      border-color: #c7d2fe;
+    }
+
+    .q-btn-indigo:hover {
+      background: #e0e7ff;
+      color: #3730a3;
+      border-color: #a5b4fc;
+    }
+
+    .q-btn-emerald {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+
+    .q-btn-emerald:hover {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #6ee7b7;
+    }
+
+    .q-btn-amber {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .q-btn-amber:hover {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+
+    /* Floating Quick Nav Dock */
+    .quick-dock-container {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99;
+      pointer-events: none;
+    }
+
+    .quick-dock {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 6px 10px;
+      border-radius: 9999px;
+      box-shadow: 0 20px 45px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      max-width: 95vw;
+      overflow-x: auto;
+    }
+
+    .dock-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .dock-link svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .dock-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .dock-link-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #ffffff !important;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.45);
+    }
+
+    .dock-link-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      box-shadow: 0 0 22px rgba(99, 102, 241, 0.65);
+    }
+
+    .dock-chip {
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.2);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 900px) {
+      .quick-nav-bar {
+        top: 64px;
+        padding: 8px 18px;
+      }
+      .quick-nav-bar-label {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .quick-dock {
+        gap: 3px;
+        padding: 5px 8px;
+      }
+      .dock-link span:not(.dock-chip) {
+        display: none;
+      }
+      .dock-link {
+        padding: 8px 10px;
+      }
+      .dock-link.dock-link-primary span:not(.dock-chip) {
+        display: inline;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<svg style="position: absolute; width: 0; height: 0; overflow: hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-grid" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24">
+      <path d="M14.5 4h-5L7 7H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4z" />
+      <circle cx="12" cy="14" r="3.5" />
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18M8 15l2 2 5-5" />
+    </symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24">
+      <rect x="2" y="5" width="20" height="16" rx="3" />
+      <path d="M2 9h20M17 15h.01M5 5V3h14" />
+    </symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24">
+      <rect x="8" y="2" width="8" height="5" rx="1" />
+      <rect x="3" y="16" width="8" height="5" rx="1" />
+      <rect x="14" y="16" width="8" height="5" rx="1" />
+      <path d="M12 7v4M7 16v-5h10v5" />
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="m8 12 3 3 5-5" />
+    </symbol>
+    <symbol id="i-list" viewBox="0 0 24 24">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24">
+      <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <path d="M6 14h12v8H6zM18 12h.01" />
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4" y="10" width="16" height="12" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v3" />
+    </symbol>
+  </svg>
+<div class="mobile-overlay" id="overlay"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="Navigasi dokumen">
+    <a href="#overview-erp" class="brand"><div class="brand-mark">W</div><div><strong>DualStack</strong><span>Internal Workforce System</span></div></a>
+    
+      <div class="doc-switcher" aria-label="Mode Dokumentasi & Navigasi Cepat">
+        <div class="doc-switcher-title">Navigasi Dokumen &amp; Aplikasi</div>
+        <a class="doc-mode-link" href="index.html">
+          <span class="mode-number">01.</span>
+          <span>Blueprint v1.0 (Inti)</span>
+        </a>
+        <a class="doc-mode-link active" href="update-rancangan.html" aria-current="page">
+          <span class="mode-number">02.</span>
+          <span>Rancangan Blueprint V2</span>
+        </a>
+        <a class="doc-mode-link" href="docs/ARCHITECTURE.md" target="_blank">
+          <span class="mode-number">03.</span>
+          <span>Dokumentasi Arsitektur</span>
+        </a>
+        <a class="doc-mode-link" href="docs/ROLE_PERMISSION_MATRIX.md" target="_blank">
+          <span class="mode-number">04.</span>
+          <span>Panduan Role &amp; Permission</span>
+        </a>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
+        <a class="doc-mode-link" href="/login" style="background: rgba(99, 102, 241, 0.18); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.4);">
+          <span class="mode-number" style="color: #818cf8;">🚀</span>
+          <span style="font-weight: 750;">Buka Aplikasi ERP (Login)</span>
+        </a>
+        <a class="doc-mode-link" href="/dashboard" style="background: rgba(16, 185, 129, 0.15); color: #a7f3d0; border: 1px solid rgba(16, 185, 129, 0.35);">
+          <span class="mode-number" style="color: #34d399;">📊</span>
+          <span style="font-weight: 750;">Dashboard Utama</span>
+        </a>
+      </div>
+    <div class="nav-label">Dokumentasi ERP v2.0</div>
+    <nav><a class="nav-link active" href="#overview-erp"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-grid"/></svg>Ringkasan ERP v2.0</a>
+<a class="nav-link" href="#deepening"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-camera"/></svg>Penguatan 3 Modul</a>
+<a class="nav-link" href="#new-modules"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-list"/></svg>3 Modul ERP Baru</a>
+<a class="nav-link" href="#rule-engines"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-shield"/></svg>Engine & Role</a>
+<a class="nav-link" href="#db-schema"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-grid"/></svg>ERD & Kamus Database</a>
+<a class="nav-link" href="#roadmap-erp"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-calendar"/></svg>Integritas & Roadmap</a></nav>
+    <div class="nav-end"><div class="nav-note"><b>Prinsip implementasi</b><br/>Sistem internal satu perusahaan. Modular per divisi, tetap satu basis data konsisten; bukan multi-tenant pada rilis awal.</div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:11px"><button class="btn menu-toggle" id="menuButton" type="button" aria-label="Buka navigasi" aria-controls="sidebar" aria-expanded="false"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-menu"/></svg></button><div class="crumb"><span>Perencanaan Sistem</span><span class="slash">/</span><b>Ekspansi ERP &amp; ERD</b></div></div>
+      <div class="top-actions">
+        <a class="btn btn-primary" href="/login" title="Buka Aplikasi ERP (Login)" style="box-shadow: 0 2px 10px rgba(70,93,232,0.35); background: linear-gradient(135deg, #4f46e5, #4338ca); border-color: #4f46e5;">
+          <svg fill="none" stroke="currentColor" width="15" height="15" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+          </svg>
+          <span>Buka Aplikasi ERP (Login)</span>
+        </a>
+        <a class="btn" href="/dashboard" title="Menuju Dashboard Utama" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe; font-weight: 750;">
+          <svg fill="none" stroke="currentColor" width="15" height="15" viewBox="0 0 24 24" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="btn page-cta" href="index.html" title="Kembali ke Blueprint Inti (v1.0)">
+          <span class="cta-full">← Blueprint Inti (v1.0)</span>
+          <span class="cta-compact">← v1.0</span>
+        </a>
+        <button class="btn btn-primary" type="button" onclick="window.print()" title="Cetak / Simpan PDF" aria-label="Cetak / Simpan PDF">
+          <svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-printer"/></svg>
+          <span>Cetak / PDF</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Prominent Modern Navigation Bar -->
+    <nav class="quick-nav-bar" aria-label="Akses Cepat Halaman ERP & Dokumentasi">
+      <div class="quick-nav-bar-label">
+        <span class="badge-dot"></span>
+        <span>Pintasan Halaman</span>
+      </div>
+      <div class="quick-nav-bar-links">
+        <a href="/login" class="q-btn q-btn-primary" title="Masuk ke Sistem Aplikasi ERP">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+          </svg>
+          <span>Buka Aplikasi ERP (Login)</span>
+        </a>
+        <a href="/dashboard" class="q-btn q-btn-indigo" title="Buka Dashboard Utama">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+          </svg>
+          <span>Dashboard Utama</span>
+        </a>
+        <a href="index.html" class="q-btn" title="Buka Blueprint Inti v1.0">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+          </svg>
+          <span>Blueprint Inti v1.0</span>
+        </a>
+        <a href="docs/ARCHITECTURE.md" target="_blank" class="q-btn q-btn-emerald" title="Buka Dokumentasi Arsitektur Sistem">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253"/>
+          </svg>
+          <span>Dokumentasi Arsitektur</span>
+        </a>
+        <a href="docs/ROLE_PERMISSION_MATRIX.md" target="_blank" class="q-btn q-btn-amber" title="Buka Panduan Role & Permission Matrix">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+          </svg>
+          <span>Panduan Role &amp; Permission</span>
+        </a>
+      </div>
+    </nav>
+    <div class="content">
+      <section id="overview-erp" class="hero"><div class="eyebrow"><span class="dot"></span>Update Rancangan v2.0 • Transformasi Menuju ERP General</div><h1>Fondasi modular untuk <span>SDM, Operasional, Aset, Pengadaan, dan Keuangan.</span></h1><p>Perluasan DualStack v1.0 menjadi rancangan ERP General untuk kebutuhan PT di Indonesia. Arsitektur modular <b>Plug-and-Play</b>, konfigurasi <b>Rule-Driven</b>, dan pengaturan role/scope memungkinkan proses bisnis berkembang tanpa mengubah kode untuk setiap perubahan kebijakan.</p><div class="hero-stats"><div class="hero-stat"><strong>06 + 3</strong><span>Modul inti + penguatan/ekstensi</span></div><div class="hero-stat"><strong>28</strong><span>Target awal tabel relasional*</span></div><div class="hero-stat"><strong>07</strong><span>Kelompok peran (+ Finance &amp; Direksi)</span></div><div class="hero-stat"><strong>04</strong><span>Mesin konfigurasi dinamis</span></div></div></section>
+<div class="alert policy-alert" style="margin-top:15px"><div><strong>*Catatan cakupan skema database</strong><p>Angka <b>28</b> dipertahankan sebagai target awal sesuai brief. Namun daftar tabel eksplisit yang diberikan berjumlah <b>35 tabel (9 + 5 + 6 + 6 + 9)</b>. Kamus di bawah menampilkan seluruh 35 tabel tanpa membuang entitas; angka target final perlu diselaraskan setelah normalisasi skema.</p></div></div>
+      <section id="deepening" class="section"><div class="section-heading"><div><p class="kicker">01 / Penguatan</p><h2>Evolusi tiga modul eksisting</h2><p>Tiga sistem v1.0 diperdalam tanpa mengubah prinsip: absensi, verifikasi pekerjaan, dan penggajian memiliki alur serta otorisasi yang terpisah.</p></div><span class="section-chip">3 modul diperkuat</span></div><div class="grid cols-3"><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-camera"/></svg></div><h3>01. Smart Attendance &amp; Shift+</h3><span class="version-tag">PENGUATAN v1.0 → v2.0</span><ul class="feature-list"><li>Anti-fake GPS dan pemeriksaan liveness selfie sebagai lapisan verifikasi tambahan.</li><li>Multi-geofencing: cabang, lokasi klien, atau kebijakan WFA.</li><li>Shift, penugasan jadwal, dan Surat Perintah Lembur (SPL) menuju komponen payroll setelah approval.</li></ul><div class="mini">Output → kehadiran sah &amp; jam lembur terverifikasi</div></article><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>02. Dual-Mode Work Timeline &amp; KPI+</h3><span class="version-tag">PENGUATAN v1.0 → v2.0</span><ul class="feature-list"><li>Dua mode: <b>Project Timeline</b> dan <b>Routine SOP Checklist</b> harian.</li><li>Timesheet man-hours untuk pemetaan penggunaan waktu dan biaya proyek.</li><li>Ketepatan waktu dan frekuensi revisi menjadi input skor KPI berdasarkan formula yang disetujui.</li></ul><div class="mini">Output → progres, effort &amp; KPI terukur</div></article><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-wallet"/></svg></div><h3>03. Payroll, Pajak &amp; Expense+</h3><span class="version-tag">PENGUATAN v1.0 → v2.0</span><ul class="feature-list"><li>Simulasi/kalkulasi PPh 21 skema TER dan BPJS Kesehatan serta Ketenagakerjaan berbasis parameter regulasi.</li><li>Reimbursement dan kasbon pegawai terhubung approval.</li><li>Ekspor CSV bank host-to-host dan e-slip PDF yang dilindungi enkripsi/kontrol akses.</li></ul><div class="mini">Output → payroll, pajak &amp; reimbursement</div></article></div><div class="card story"><div><strong>Kontrol tambahan, bukan pengganti audit manusia.</strong><p>Liveness dan pemeriksaan lokasi mengurangi risiko manipulasi, tetapi bukan bukti anti-pemalsuan absolut. Exception perlu di-review oleh petugas berwenang.</p></div><span class="small-tag">Evidence + Approval</span></div></section>
+      <section id="new-modules" class="section"><div class="section-heading"><div><p class="kicker">02 / Ekspansi lintas divisi</p><h2>Tiga modul baru untuk Full ERP General</h2><p>Layanan pendukung perusahaan ditingkatkan menjadi modul terintegrasi, tetapi fitur bisa diaktifkan menurut kesiapan proses dan kebutuhan bisnis.</p></div><span class="section-chip">3 modul ERP baru</span></div><div class="grid cols-3"><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-grid"/></svg></div><h3>04. General Affairs (GA) &amp; Asset Management</h3><span class="version-tag">MODUL BARU</span><ul class="feature-list"><li>Catat aset laptop, kendaraan, perangkat, dan akses yang dipinjam pegawai/magang.</li><li>BAST digital dan clearance offboarding sebelum penyelesaian hak akhir sesuai kebijakan yang berlaku.</li><li>Jadwal maintenance, usia manfaat, dan penyusutan aset.</li></ul><div class="mini">Output → siklus hidup &amp; tanggung jawab aset</div></article><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-list"/></svg></div><h3>05. Purchasing / Procure-to-Pay</h3><span class="version-tag">MODUL BARU</span><ul class="feature-list"><li>Purchase Request (PR) dengan pemeriksaan budget departemen.</li><li>Approval dan konversi PR ke Purchase Order (PO) vendor.</li><li>Three-Way Matching: PO + Goods Receipt + Invoice sebelum dibayar.</li></ul><div class="mini">Output → kontrol pengadaan &amp; utang vendor</div></article><article class="card module-card"><div class="icon-box"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-wallet"/></svg></div><h3>06. Finance &amp; Auto-Journaling (General Ledger)</h3><span class="version-tag">MODUL BARU</span><ul class="feature-list"><li>Jurnal berimbang saat payroll dibayar, reimbursement cair, dan tagihan PO diposting.</li><li>CoA (Chart of Accounts), pencatatan debit dan kredit, serta posting jurnal.</li><li>Laporan Neraca, Laba Rugi, dan Arus Kas dari transaksi yang telah tervalidasi.</li></ul><div class="mini">Output → pembukuan &amp; laporan keuangan</div></article></div><div class="alert" style="margin-top:16px"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-info"/></svg><div><strong>Dependensi pencatatan transaksi</strong><p>Three-Way Matching membutuhkan dokumen <b>Goods Receipt</b> dan <b>Vendor Invoice</b>. Dua entitas itu belum masuk daftar 35 tabel yang diberikan; pada implementasi operasional disarankan ditambah sebagai tabel tersendiri, bukan memaksakan semua datanya ke purchase_orders.</p></div></div></section>
+      <section id="rule-engines" class="section"><div class="section-heading"><div><p class="kicker">03 / Tata kelola</p><h2>Empat mesin aturan &amp; perluasan role</h2><p>Pengaturan kebijakan dapat berubah lewat data dan workflow, sementara hak akses serta audit tetap dikendalikan backend.</p></div><span class="section-chip">7 kelompok peran</span></div><div class="grid cols-2" style="margin-bottom:16px"><article class="card role-expansion"><span class="step-badge">ROLE 06</span><h3>Finance / General Affairs (GA)</h3><p>Mengelola pengadaan, aset, reimbursement, jurnal sesuai delegasi; tidak otomatis memperoleh izin mengubah data absensi atau identitas semua pegawai.</p></article><article class="card role-expansion"><span class="step-badge">ROLE 07</span><h3>Direksi / Executive</h3><p>Akses dashboard lintas unit secara read-only, dengan izin <b>High-Value Approval</b> terbatas untuk transaksi bernilai tinggi; tidak menyunting transaksi operasional tanpa mandat.</p></article></div><div class="grid cols-2"><article class="card engine-card"><span class="step-badge">ENGINE 01</span><h3>Dynamic Multi-Level Approval Engine</h3><p>Aturan persetujuan berjenjang berdasarkan modul, divisi, nominal, dan penanggung jawab. Setiap keputusan disimpan dalam approval_logs.</p></article><article class="card engine-card"><span class="step-badge">ENGINE 02</span><h3>Configurable Payroll Formula Builder</h3><p>Ekspresi dengan variabel terbatas: hadir_hari, alpha_hari, jam_lembur, gaji_pokok; gunakan parser aman, versioning formula, dan uji simulasi — bukan eval JavaScript.</p></article><article class="card engine-card"><span class="step-badge">ENGINE 03</span><h3>Scope-Based RBAC</h3><p>Otorisasi berdasarkan role dan scope cabang/departemen. Seluruh pembatasan diterapkan kembali pada query dan API backend, bukan hanya menu frontend.</p></article><article class="card engine-card"><span class="step-badge">ENGINE 04</span><h3>Immutable Audit Trail & Feature Toggle</h3><p>Audit append-only berisi old_values / new_values JSONB, alamat IP, dan aktor; konfigurasi enable/disable modul per entitas perusahaan jika suatu saat diperluas.</p></article></div><div class="workflow-visual" aria-label="Contoh approval dinamis"><span class="workflow-node">PR Diajukan</span><span class="workflow-arrow">→</span><span class="workflow-node">Atasan Unit</span><span class="workflow-arrow">→</span><span class="workflow-node">Finance</span><span class="workflow-arrow">→</span><span class="workflow-node">Direksi (jika melewati ambang)</span></div><p class="fineprint">Lima peran existing tetap: Admin/HR, Senior/Supervisor, Karyawan/Junior, Anak Magang, serta Tim Payroll. Konfigurasi perusahaan disiapkan untuk ekspansi berikutnya tanpa mengubah lingkup single-company awal.</p></section>
+      <section id="db-schema" class="section"><div class="section-heading"><div><p class="kicker">04 / Database</p><h2>Arsitektur ERD &amp; kamus database</h2><p>Lima klaster domain saling berbagi employee/user ID, approval, dan audit. Klik klaster diagram untuk menampilkan penjelasannya, atau filter tabel berdasarkan kategori dan kata kunci.</p></div><span class="section-chip">PostgreSQL / relasional</span></div><article class="card diagram-card erd-shell"><div class="diagram-toolbar"><strong style="font-size:13px">Peta relasi domain — 5 klaster utama</strong><span class="diagram-hint"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-info"/></svg> Klik klaster • geser pada mobile</span></div><div class="canvas erd-canvas"><svg class="erd-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1204 636" role="group" aria-label="ERD klaster: IAM, Attendance, Work Timeline, Payroll, Asset Purchasing Finance"><defs><marker id="erd-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#8ea4cc" stroke-width="1.7"/></marker></defs><path class="erd-line" d="M 446 158 L 225 230" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="324" y="187">Master pegawai</text><path class="erd-line" d="M 757 158 L 986 230" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="840" y="187">Pengguna &amp; approvals</text><path class="erd-line" d="M 490 158 L 226 470" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="330" y="415">Scope &amp; roles</text><path class="erd-line" d="M 725 158 L 991 470" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="886" y="411">Approval &amp; sumber</text><path class="erd-line" d="M 221 372 L 221 468" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="232" y="425">Cutoff</text><path class="erd-line" d="M 818 330 L 657 330 L 657 540 L 388 540" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="492" y="517">Timesheet &amp; biaya</text><path class="erd-line" d="M 386 545 L 816 545" marker-end="url(#erd-arrow)"/><text class="erd-rel" x="523" y="571">Transaksi → jurnal</text><g data-cluster="iam" role="button" tabindex="0" aria-label="Detail klaster CORE IAM &amp; ORGANISASI" class="selected"><rect class="erd-box" x="405" y="24" width="392" height="134" rx="17"/><rect x="421" y="40" width="360" height="3" rx="2" fill="#586bed"/><text class="erd-number" x="428" y="66">09 TABEL</text><text class="erd-heading" x="428" y="93">CORE IAM &amp; ORGANISASI</text><text class="erd-caption" x="428" y="118">users · employees · roles</text><text class="erd-caption" x="428" y="137">branches · departments · approvals</text></g><g data-cluster="attendance" role="button" tabindex="0" aria-label="Detail klaster 01 · ATTENDANCE" class=""><rect class="erd-box" x="54" y="232" width="332" height="140" rx="17"/><rect x="70" y="248" width="300" height="3" rx="2" fill="#7a8cdd"/><text class="erd-number" x="77" y="274">05 TABEL</text><text class="erd-heading" x="77" y="301">01 · ATTENDANCE</text><text class="erd-caption" x="77" y="326">work_shifts · attendance_logs</text><text class="erd-caption" x="77" y="345">schedules · correction · SPL</text></g><g data-cluster="timeline" role="button" tabindex="0" aria-label="Detail klaster 02 · WORK TIMELINE" class=""><rect class="erd-box" x="818" y="232" width="332" height="140" rx="17"/><rect x="834" y="248" width="300" height="3" rx="2" fill="#7a8cdd"/><text class="erd-number" x="841" y="274">06 TABEL</text><text class="erd-heading" x="841" y="301">02 · WORK TIMELINE</text><text class="erd-caption" x="841" y="326">monthly_targets → daily_tasks</text><text class="erd-caption" x="841" y="345">evidences · reviews · logbook</text></g><g data-cluster="payroll" role="button" tabindex="0" aria-label="Detail klaster 03 · PAYROLL &amp; EXPENSE" class=""><rect class="erd-box" x="54" y="470" width="332" height="140" rx="17"/><rect x="70" y="486" width="300" height="3" rx="2" fill="#7a8cdd"/><text class="erd-number" x="77" y="512">06 TABEL</text><text class="erd-heading" x="77" y="539">03 · PAYROLL &amp; EXPENSE</text><text class="erd-caption" x="77" y="564">salary_components · payslips</text><text class="erd-caption" x="77" y="583">payroll_periods · reimbursements</text></g><g data-cluster="finance" role="button" tabindex="0" aria-label="Detail klaster 04–06 · ERP FINANCE" class=""><rect class="erd-box" x="818" y="470" width="332" height="140" rx="17"/><rect x="834" y="486" width="300" height="3" rx="2" fill="#7a8cdd"/><text class="erd-number" x="841" y="512">09 TABEL</text><text class="erd-heading" x="841" y="539">04–06 · ERP FINANCE</text><text class="erd-caption" x="841" y="564">assets · vendors · PR/PO</text><text class="erd-caption" x="841" y="583">chart_of_accounts · journal</text></g></svg></div><div class="detail-strip"><div class="detail-symbol">i</div><div><strong id="erdDetailTitle">CORE IAM &amp; Organisasi</strong><p id="erdDetailText">Identitas user, profil pegawai, struktur cabang/departemen, scope role, serta workflow dan log approval menghubungkan seluruh modul.</p></div></div><p class="diagram-note">Relasi garis putus-putus menunjukkan aliran referensi/proses antardomain, bukan setiap foreign key fisik. Detail FK utama disajikan pada kamus di bawah.</p></article><article class="card diagram-card"><div class="db-toolbar"><div class="tabs" role="group" aria-label="Filter kategori tabel database"><button class="tab db-filter" type="button" data-group="all" aria-pressed="true">Semua</button><button class="tab db-filter" type="button" data-group="iam" aria-pressed="false">Core IAM &amp; Organisasi</button><button class="tab db-filter" type="button" data-group="attendance" aria-pressed="false">01. Attendance</button><button class="tab db-filter" type="button" data-group="timeline" aria-pressed="false">02. Work Timeline</button><button class="tab db-filter" type="button" data-group="payroll" aria-pressed="false">03. Payroll &amp; Expense</button><button class="tab db-filter" type="button" data-group="finance" aria-pressed="false">04–06. Asset, PO &amp; Finance</button></div><input class="db-search" id="dbSearch" type="search" placeholder="Cari tabel, kolom, fungsi..." aria-label="Cari nama tabel kolom atau fungsi" /></div><div class="diagram-toolbar"><strong style="font-size:13px">Kamus tabel relasional</strong><span class="result-count" id="resultCount" role="status" aria-live="polite">Menampilkan 35 dari 35 tabel</span></div><div class="db-table-wrap"><table class="db-table"><thead><tr><th scope="col" style="width:20%">Nama Tabel</th><th scope="col" style="width:49%">Kolom Utama (PK / FK)</th><th scope="col">Fungsi Bisnis</th></tr></thead><tbody><tr class="db-row" data-category="iam" data-search="branches id code name address is_active data kantor cabang dan cakupan lokasi organisasi."><td><code>branches</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">code</span><span class="token">name</span><span class="token">address</span><span class="token">is_active</span></td><td>Data kantor cabang dan cakupan lokasi organisasi.</td></tr><tr class="db-row" data-category="iam" data-search="departments id branch_id name cost_center struktur divisi dan pengelompokan anggaran."><td><code>departments</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token">name</span><span class="token">cost_center</span></td><td>Struktur divisi dan pengelompokan anggaran.</td></tr><tr class="db-row" data-category="iam" data-search="job_positions id department_id title grade jabatan dan klasifikasi level pegawai."><td><code>job_positions</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>department_id</span><span class="token">title</span><span class="token">grade</span></td><td>Jabatan dan klasifikasi level pegawai.</td></tr><tr class="db-row" data-category="iam" data-search="users id email password_hash is_active identitas login dan autentikasi tiap aktor."><td><code>users</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">email</span><span class="token">password_hash</span><span class="token">is_active</span></td><td>Identitas login dan autentikasi tiap aktor.</td></tr><tr class="db-row" data-category="iam" data-search="roles id code name definisi tujuh kelompok peran dan akses fungsional."><td><code>roles</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">code</span><span class="token">name</span></td><td>Definisi tujuh kelompok peran dan akses fungsional.</td></tr><tr class="db-row" data-category="iam" data-search="user_roles user_id role_id branch_id department_id pemetaan banyak-peran dan batasan scope per penugasan."><td><code>user_roles</code></td><td><span class="token"><span class="key-badge pk">PK</span><span class="key-badge fk">FK</span>user_id</span><span class="token"><span class="key-badge pk">PK</span><span class="key-badge fk">FK</span>role_id</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token"><span class="key-badge fk">FK</span>department_id</span></td><td>Pemetaan banyak-peran dan batasan scope per penugasan.</td></tr><tr class="db-row" data-category="iam" data-search="employees id user_id branch_id department_id job_position_id supervisor_id employment_status profil pegawai atau magang; supervisor_id → employees.id (self-fk)."><td><code>employees</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>user_id</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token"><span class="key-badge fk">FK</span>department_id</span><span class="token"><span class="key-badge fk">FK</span>job_position_id</span><span class="token"><span class="key-badge fk">FK</span>supervisor_id</span><span class="token">employment_status</span></td><td>Profil pegawai atau magang; supervisor_id → employees.id (self-FK).</td></tr><tr class="db-row" data-category="iam" data-search="approval_workflows id module branch_id department_id min_amount approver_role_id step_order aturan approval berjenjang menurut modul, divisi, nominal, dan urutan."><td><code>approval_workflows</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">module</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token"><span class="key-badge fk">FK</span>department_id</span><span class="token">min_amount</span><span class="token"><span class="key-badge fk">FK</span>approver_role_id</span><span class="token">step_order</span></td><td>Aturan approval berjenjang menurut modul, divisi, nominal, dan urutan.</td></tr><tr class="db-row" data-category="iam" data-search="approval_logs id workflow_id approver_id entity_type entity_id decision decided_at jejak keputusan approval dengan referensi objek lintas modul."><td><code>approval_logs</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>workflow_id</span><span class="token"><span class="key-badge fk">FK</span>approver_id</span><span class="token">entity_type</span><span class="token">entity_id</span><span class="token">decision</span><span class="token">decided_at</span></td><td>Jejak keputusan approval dengan referensi objek lintas modul.</td></tr><tr class="db-row" data-category="attendance" data-search="work_shifts id branch_id name start_time end_time grace_minutes definisi jam shift dan toleransi keterlambatan."><td><code>work_shifts</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token">name</span><span class="token">start_time</span><span class="token">end_time</span><span class="token">grace_minutes</span></td><td>Definisi jam shift dan toleransi keterlambatan.</td></tr><tr class="db-row" data-category="attendance" data-search="employee_schedules id employee_id work_shift_id work_date geofence_id penempatan shift per pegawai dan lokasi kerja yang disetujui."><td><code>employee_schedules</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token"><span class="key-badge fk">FK</span>work_shift_id</span><span class="token">work_date</span><span class="token">geofence_id</span></td><td>Penempatan shift per pegawai dan lokasi kerja yang disetujui.</td></tr><tr class="db-row" data-category="attendance" data-search="attendance_logs id employee_id schedule_id check_in_at check_out_at selfie_path gps_point is_locked log absensi, selfie, timestamp server, lokasi, dan flag lock saat cut-off."><td><code>attendance_logs</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token"><span class="key-badge fk">FK</span>schedule_id</span><span class="token">check_in_at</span><span class="token">check_out_at</span><span class="token">selfie_path</span><span class="token">gps_point</span><span class="token">is_locked</span></td><td>Log absensi, selfie, timestamp server, lokasi, dan flag lock saat cut-off.</td></tr><tr class="db-row" data-category="attendance" data-search="attendance_corrections id attendance_log_id employee_id requested_value reason approved_by_id status koreksi kehadiran melalui persetujuan dan jejak audit."><td><code>attendance_corrections</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>attendance_log_id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token">requested_value</span><span class="token">reason</span><span class="token"><span class="key-badge fk">FK</span>approved_by_id</span><span class="token">status</span></td><td>Koreksi kehadiran melalui persetujuan dan jejak audit.</td></tr><tr class="db-row" data-category="attendance" data-search="leave_overtime_requests id employee_id request_type start_at end_at spl_number approved_by_id status izin, cuti, dan spl lembur; data terverifikasi dapat dibawa ke payroll."><td><code>leave_overtime_requests</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token">request_type</span><span class="token">start_at</span><span class="token">end_at</span><span class="token">spl_number</span><span class="token"><span class="key-badge fk">FK</span>approved_by_id</span><span class="token">status</span></td><td>Izin, cuti, dan SPL lembur; data terverifikasi dapat dibawa ke payroll.</td></tr><tr class="db-row" data-category="timeline" data-search="monthly_targets id owner_id supervisor_id month target status sasaran bulanan yang ditetapkan atau dipantau senior."><td><code>monthly_targets</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>owner_id</span><span class="token"><span class="key-badge fk">FK</span>supervisor_id</span><span class="token">month</span><span class="token">target</span><span class="token">status</span></td><td>Sasaran bulanan yang ditetapkan atau dipantau senior.</td></tr><tr class="db-row" data-category="timeline" data-search="weekly_plans id monthly_target_id employee_id week_start planned_result dekomposisi target bulanan ke rencana mingguan."><td><code>weekly_plans</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>monthly_target_id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token">week_start</span><span class="token">planned_result</span></td><td>Dekomposisi target bulanan ke rencana mingguan.</td></tr><tr class="db-row" data-category="timeline" data-search="daily_tasks id weekly_plan_id assignee_id status due_at approved_by_id approved_at task harian dengan state waiting_verification → approved oleh senior."><td><code>daily_tasks</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>weekly_plan_id</span><span class="token"><span class="key-badge fk">FK</span>assignee_id</span><span class="token">status</span><span class="token">due_at</span><span class="token"><span class="key-badge fk">FK</span>approved_by_id</span><span class="token">approved_at</span></td><td>Task harian dengan state WAITING_VERIFICATION → APPROVED oleh senior.</td></tr><tr class="db-row" data-category="timeline" data-search="task_evidences id daily_task_id uploaded_by_id file_path created_at bukti kerja wajib sebelum persetujuan tugas."><td><code>task_evidences</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>daily_task_id</span><span class="token"><span class="key-badge fk">FK</span>uploaded_by_id</span><span class="token">file_path</span><span class="token">created_at</span></td><td>Bukti kerja wajib sebelum persetujuan tugas.</td></tr><tr class="db-row" data-category="timeline" data-search="task_reviews id daily_task_id reviewer_id decision revision_notes reviewed_at evaluasi, revisi, dan otorisasi keluaran tugas."><td><code>task_reviews</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>daily_task_id</span><span class="token"><span class="key-badge fk">FK</span>reviewer_id</span><span class="token">decision</span><span class="token">revision_notes</span><span class="token">reviewed_at</span></td><td>Evaluasi, revisi, dan otorisasi keluaran tugas.</td></tr><tr class="db-row" data-category="timeline" data-search="intern_logbooks id employee_id daily_task_id activity_date description mentor_id logbook peserta magang dan evaluasi pembimbing."><td><code>intern_logbooks</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token"><span class="key-badge fk">FK</span>daily_task_id</span><span class="token">activity_date</span><span class="token">description</span><span class="token"><span class="key-badge fk">FK</span>mentor_id</span></td><td>Logbook peserta magang dan evaluasi pembimbing.</td></tr><tr class="db-row" data-category="payroll" data-search="salary_components id code component_type formula_expression taxable master tunjangan, potongan, dan ekspresi formula payroll tervalidasi."><td><code>salary_components</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">code</span><span class="token">component_type</span><span class="token">formula_expression</span><span class="token">taxable</span></td><td>Master tunjangan, potongan, dan ekspresi formula payroll tervalidasi.</td></tr><tr class="db-row" data-category="payroll" data-search="employee_salary_structures id employee_id salary_component_id amount valid_from valid_to komponen gaji per pegawai dan periode keberlakuannya."><td><code>employee_salary_structures</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token"><span class="key-badge fk">FK</span>salary_component_id</span><span class="token">amount</span><span class="token">valid_from</span><span class="token">valid_to</span></td><td>Komponen gaji per pegawai dan periode keberlakuannya.</td></tr><tr class="db-row" data-category="payroll" data-search="payroll_periods id period_month status attendance_locked_at locked_by_id closed_at gerbang cutoff hr untuk mengunci absensi sebelum proses payroll."><td><code>payroll_periods</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">period_month</span><span class="token">status</span><span class="token">attendance_locked_at</span><span class="token"><span class="key-badge fk">FK</span>locked_by_id</span><span class="token">closed_at</span></td><td>Gerbang cutoff HR untuk mengunci absensi sebelum proses payroll.</td></tr><tr class="db-row" data-category="payroll" data-search="payslips id employee_id payroll_period_id gross_amount net_amount payment_status slip penggajian per pegawai dan periode."><td><code>payslips</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token"><span class="key-badge fk">FK</span>payroll_period_id</span><span class="token">gross_amount</span><span class="token">net_amount</span><span class="token">payment_status</span></td><td>Slip penggajian per pegawai dan periode.</td></tr><tr class="db-row" data-category="payroll" data-search="payslip_items id payslip_id salary_component_id item_amount calculation_snapshot snapshot rincian perhitungan gaji, pajak, bpjs, dan potongan."><td><code>payslip_items</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>payslip_id</span><span class="token"><span class="key-badge fk">FK</span>salary_component_id</span><span class="token">item_amount</span><span class="token">calculation_snapshot</span></td><td>Snapshot rincian perhitungan gaji, pajak, BPJS, dan potongan.</td></tr><tr class="db-row" data-category="payroll" data-search="reimbursements id employee_id expense_category claimed_amount approved_amount payment_status pengajuan biaya pegawai; alur kasbon dapat ditambah lewat tipe transaksi."><td><code>reimbursements</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token">expense_category</span><span class="token">claimed_amount</span><span class="token">approved_amount</span><span class="token">payment_status</span></td><td>Pengajuan biaya pegawai; alur kasbon dapat ditambah lewat tipe transaksi.</td></tr><tr class="db-row" data-category="finance" data-search="company_assets id asset_code asset_name branch_id acquisition_cost depreciation_method master aset, nilai perolehan, maintenance, dan penyusutan."><td><code>company_assets</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">asset_code</span><span class="token">asset_name</span><span class="token"><span class="key-badge fk">FK</span>branch_id</span><span class="token">acquisition_cost</span><span class="token">depreciation_method</span></td><td>Master aset, nilai perolehan, maintenance, dan penyusutan.</td></tr><tr class="db-row" data-category="finance" data-search="asset_assignments id asset_id employee_id bast_number assigned_at returned_at clearance_status peminjaman, bast digital, dan clearance offboarding."><td><code>asset_assignments</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>asset_id</span><span class="token"><span class="key-badge fk">FK</span>employee_id</span><span class="token">bast_number</span><span class="token">assigned_at</span><span class="token">returned_at</span><span class="token">clearance_status</span></td><td>Peminjaman, BAST digital, dan clearance offboarding.</td></tr><tr class="db-row" data-category="finance" data-search="vendors id vendor_code name tax_id bank_account_ref data pemasok untuk pengadaan dan pembayaran."><td><code>vendors</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">vendor_code</span><span class="token">name</span><span class="token">tax_id</span><span class="token">bank_account_ref</span></td><td>Data pemasok untuk pengadaan dan pembayaran.</td></tr><tr class="db-row" data-category="finance" data-search="purchase_requests id requester_id department_id budget_code total_estimate status permintaan pembelian dan validasi anggaran departemen."><td><code>purchase_requests</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>requester_id</span><span class="token"><span class="key-badge fk">FK</span>department_id</span><span class="token">budget_code</span><span class="token">total_estimate</span><span class="token">status</span></td><td>Permintaan pembelian dan validasi anggaran departemen.</td></tr><tr class="db-row" data-category="finance" data-search="purchase_orders id purchase_request_id vendor_id po_number total_amount status po ke vendor; titik acuan matching po–penerimaan–invoice."><td><code>purchase_orders</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>purchase_request_id</span><span class="token"><span class="key-badge fk">FK</span>vendor_id</span><span class="token">po_number</span><span class="token">total_amount</span><span class="token">status</span></td><td>PO ke vendor; titik acuan matching PO–penerimaan–invoice.</td></tr><tr class="db-row" data-category="finance" data-search="chart_of_accounts id account_code account_name account_type parent_account_id bagan akun gl untuk jurnal dan pelaporan keuangan."><td><code>chart_of_accounts</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">account_code</span><span class="token">account_name</span><span class="token">account_type</span><span class="token"><span class="key-badge fk">FK</span>parent_account_id</span></td><td>Bagan akun GL untuk jurnal dan pelaporan keuangan.</td></tr><tr class="db-row" data-category="finance" data-search="journal_entries id entry_number journal_date source_type source_id status posted_by_id header jurnal otomatis dari payroll, reimbursements, atau tagihan."><td><code>journal_entries</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token">entry_number</span><span class="token">journal_date</span><span class="token">source_type</span><span class="token">source_id</span><span class="token">status</span><span class="token"><span class="key-badge fk">FK</span>posted_by_id</span></td><td>Header jurnal otomatis dari payroll, reimbursements, atau tagihan.</td></tr><tr class="db-row" data-category="finance" data-search="journal_items id journal_entry_id account_id debit credit baris jurnal debit/kredit; total wajib seimbang ketika posting."><td><code>journal_items</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>journal_entry_id</span><span class="token"><span class="key-badge fk">FK</span>account_id</span><span class="token">debit</span><span class="token">credit</span></td><td>Baris jurnal debit/kredit; total wajib seimbang ketika posting.</td></tr><tr class="db-row" data-category="finance" data-search="audit_logs id actor_user_id entity_type entity_id old_values new_values ip_address created_at audit append-only perubahan penting dengan snapshot jsonb dan ip."><td><code>audit_logs</code></td><td><span class="token"><span class="key-badge pk">PK</span>id</span><span class="token"><span class="key-badge fk">FK</span>actor_user_id</span><span class="token">entity_type</span><span class="token">entity_id</span><span class="token">old_values</span><span class="token">new_values</span><span class="token">ip_address</span><span class="token">created_at</span></td><td>Audit append-only perubahan penting dengan snapshot JSONB dan IP.</td></tr></tbody></table></div><div class="legend-row"><span><span class="key-badge pk">PK</span> Primary Key</span><span><span class="key-badge fk">FK</span> Foreign Key</span><span>Contoh kolom logis, bukan migrasi SQL final</span></div><p class="fineprint">Konvensi: <code>employees.supervisor_id</code> adalah self-FK. <code>approval_logs.entity_type/entity_id</code> dan <code>journal_entries.source_type/source_id</code> adalah referensi polimorfik yang perlu validasi aplikasi; bukan foreign key langsung. <code>geofence_id</code> memerlukan master geofence pada skema lengkap.</p></article></section>
+      <section id="roadmap-erp" class="section"><div class="section-heading"><div><p class="kicker">05 / Integritas &amp; implementasi</p><h2>Aturan konsistensi dan peta jalan tiga fase</h2><p>Kunci integritas tidak cukup divisualisasikan di frontend. Simpan validasi transaksi, otorisasi, dan state machine di service/backend serta constraint atau trigger database.</p></div><span class="section-chip">4 aturan + 3 fase</span></div><article class="card"><div class="rules"><div class="rule"><div class="rule-icon">01</div><div><strong>Pemisahan kinerja tugas dan gaji pokok</strong><p>Keterlambatan task, revisi, atau KPI rendah tidak otomatis menjadi pemotongan gaji pokok. Kebijakan komponen payroll diatur terpisah dari penilaian kinerja dan wajib mematuhi ketentuan ketenagakerjaan.</p></div></div><div class="rule"><div class="rule-icon">02</div><div><strong>State machine dan bukti approval daily_tasks</strong><p>Transisi WAITING_VERIFICATION → APPROVED hanya sah bila ada minimal satu task_evidences yang valid, approved_by_id menunjuk Senior berwenang, serta approved_at dicatat. Validasi lintas tabel memerlukan transaction/service atau database trigger, tidak cukup CHECK pada satu baris.</p></div></div><div class="rule"><div class="rule-icon">03</div><div><strong>Cutoff attendance_logs bersifat terkunci</strong><p>Saat payroll_periods.status = ATTENDANCE_LOCKED, seluruh attendance_logs dalam periode itu diset is_locked = TRUE. Update/delete langsung ditolak; perubahan pasca-lock memerlukan prosedur reopen/koreksi berotorisasi serta audit yang menjaga histori.</p></div></div><div class="rule"><div class="rule-icon">04</div><div><strong>Jurnal debit dan kredit harus seimbang</strong><p>Setiap journal_entries hanya boleh berstatus POSTED jika SUM(journal_items.debit) = SUM(journal_items.credit), nilai tidak negatif, serta tiap item mengisi debit atau kredit yang sesuai. Uji keseimbangan pada transaksi posting secara atomik.</p></div></div></div></article><div class="section-heading" style="margin-top:25px"><div><p class="kicker">06 / Delivery</p><h2>Roadmap rilis produk</h2><p>Pemenuhan modul dilakukan bertahap agar fondasi Workforce System tetap dapat diuji sebelum ekspansi General ERP.</p></div></div><div class="steps"><article class="card step-card"><div class="step-badge">Fase 01 • MVP v1.0</div><h3>Attendance, Work Timeline &amp; Basic Payroll</h3><p>Fondasi inti untuk validasi pekerjaan sehari-hari.</p><ul><li>Akun, user roles, selfie/GPS, jadwal dan koreksi</li><li>Target bulanan, mingguan, task + verifikasi senior</li><li>Cutoff HR, payroll dasar &amp; export Excel</li></ul></article><article class="card step-card"><div class="step-badge">Fase 02 • Full HRIS</div><h3>Pajak, BPJS, Reimbursement &amp; BAST Aset</h3><p>Penguatan kebijakan SDM dan tata kelola aset.</p><ul><li>PPh 21 TER, BPJS &amp; formula payroll versi</li><li>Reimbursement, kasbon dan approval berjenjang</li><li>GA, manajemen aset, BAST &amp; clearance</li></ul></article><article class="card step-card"><div class="step-badge">Fase 03 • Core ERP</div><h3>Purchasing, Auto-Journaling &amp; Executive Dashboard</h3><p>Menghubungkan pengadaan, keuangan, dan direksi.</p><ul><li>PR/PO, tiga dokumen matching, vendor</li><li>General Ledger, posting dan laporan keuangan</li><li>Executive Dashboard read-only &amp; high-value approval</li></ul></article></div><div class="alert" style="margin-top:17px"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-info"/></svg><div><strong>Catatan perancangan sebelum implementasi</strong><p>Daftar 35 tabel belum mencakup seluruh entitas teknis tambahan untuk geofence, timesheet, KPI score, invoice vendor, goods receipt, detail PO, transaksi kasbon, feature flags, serta laporan pajak. Angka tabel akhir mungkin bertambah setelah normalisasi ERD fisik. Validasi tarif TER/BPJS, skema H2H bank, dan proses pelaporan keuangan harus mengikuti aturan dan spesifikasi yang berlaku saat implementasi.</p></div></div>
+          <a class="jump-card print-hide" href="index.html">
+            <div><span class="jump-label">Kembali ke fondasi / v1.0</span><h3>Tinjau kembali Blueprint Inti DualStack</h3><p>Lihat use case, flowchart, matriks hak akses, aturan bisnis, dan rencana implementasi awal.</p></div>
+            <span class="btn btn-primary">← Buka Blueprint v1.0</span>
+          </a></section>
+      <footer class="footer"><span><b>DualStack</b> · Blueprint Ekspansi Full ERP General &amp; Database · Versi 2.0</span><span>Dokumen rancangan konseptual, bukan skema produksi final.</span></footer>
+    </div>
+  </main>
+</div>
+<script>
+(()=>{'use strict';
+ const sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay'),menuButton=document.getElementById('menuButton');
+ const closeNav=()=>{sidebar.classList.remove('show');overlay.classList.remove('show');menuButton.setAttribute('aria-expanded','false');};
+ menuButton.addEventListener('click',()=>{const open=!sidebar.classList.contains('show');sidebar.classList.toggle('show',open);overlay.classList.toggle('show',open);menuButton.setAttribute('aria-expanded',String(open));});
+ overlay.addEventListener('click',closeNav);
+ document.querySelectorAll('.nav-link,.doc-mode-link').forEach(a=>a.addEventListener('click',closeNav));
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')closeNav();});
+ if('IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v) document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+v.target.id));},{rootMargin:'-22% 0px -65% 0px',threshold:0});document.querySelectorAll('.content section[id]').forEach(s=>io.observe(s));}
+ const filters=document.querySelectorAll('.db-filter'),tableRows=[...document.querySelectorAll('.db-row')],search=document.getElementById('dbSearch'),counter=document.getElementById('resultCount');let activeGroup='all';
+ function updateFilter(){const q=search.value.toLocaleLowerCase('id').trim();let visible=0;tableRows.forEach(row=>{const match=(activeGroup==='all'||row.dataset.category===activeGroup)&&(!q||row.dataset.search.includes(q));row.hidden=!match;if(match)visible++;});counter.textContent=`Menampilkan ${visible} dari ${tableRows.length} tabel`;filters.forEach(b=>{const on=b.dataset.group===activeGroup;b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-selected',String(on));});}
+ filters.forEach(button=>button.addEventListener('click',()=>{activeGroup=button.dataset.group;updateFilter();}));search.addEventListener('input',updateFilter);updateFilter();
+ const descriptions={iam:['CORE IAM & Organisasi','Identitas, employee hierarchy (termasuk self-FK supervisor), cakupan branch/department, role, approval workflow dan audit keputusan semua modul.'],attendance:['01. Smart Attendance','Shift dan jadwal menghasilkan bukti hadir yang terverifikasi; cutoff HR mengunci attendance_logs sebelum payroll.'],timeline:['02. Work Timeline','Target, rencana mingguan, task, evidence, reviews, dan logbook mengelola progres serta kerja yang disetujui Senior.'],payroll:['03. Payroll & Expense','Formula gaji, struktur komponen, periode cutoff, slip dan reimbursement diturunkan menjadi transaksi yang bisa diposting ke jurnal.'],finance:['04–06. Asset, Purchasing & Finance','Aset/BAST, PR/PO/vendor dan CoA/jurnal mengikat pengadaan dengan pencatatan General Ledger.']};
+ const title=document.getElementById('erdDetailTitle'),desc=document.getElementById('erdDetailText');
+ function activateCluster(key){const d=descriptions[key];if(!d)return;title.textContent=d[0];desc.textContent=d[1];document.querySelectorAll('[data-cluster]').forEach(g=>{g.classList.toggle('selected',g.dataset.cluster===key);g.setAttribute('aria-pressed',String(g.dataset.cluster===key));});}
+ document.querySelectorAll('[data-cluster]').forEach(g=>{g.addEventListener('click',()=>activateCluster(g.dataset.cluster));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activateCluster(g.dataset.cluster);}});});activateCluster('iam');
+ window.addEventListener('beforeprint',()=>tableRows.forEach(row=>row.hidden=false));
+ window.addEventListener('afterprint',updateFilter);
+})();
+</script>
+
+<!-- Persistent Floating Quick-Nav Dock -->
+<div class="quick-dock-container" aria-label="Akses Cepat Floating Dock">
+  <nav class="quick-dock">
+    <a href="/login" class="dock-link dock-link-primary" title="Buka Aplikasi ERP (Login)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+      </svg>
+      <span>Buka Aplikasi ERP (Login)</span>
+      <span class="dock-chip">Aplikasi</span>
+    </a>
+    <a href="/dashboard" class="dock-link" title="Dashboard Utama Enterprise">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+      </svg>
+      <span>Dashboard Utama</span>
+    </a>
+    <a href="index.html" class="dock-link" title="Blueprint Inti v1.0">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+      </svg>
+      <span>Blueprint Inti v1.0</span>
+    </a>
+    <a href="docs/ARCHITECTURE.md" target="_blank" class="dock-link" title="Dokumentasi Arsitektur">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253"/>
+      </svg>
+      <span>Arsitektur</span>
+    </a>
+    <a href="docs/ROLE_PERMISSION_MATRIX.md" target="_blank" class="dock-link" title="Panduan Role & Permission">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+      </svg>
+      <span>Role Matrix</span>
+    </a>
+  </nav>
+</div>
+</body>
+</html>
